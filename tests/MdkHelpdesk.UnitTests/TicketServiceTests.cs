@@ -312,6 +312,33 @@ public sealed class TicketServiceTests : IDisposable
         Assert.Empty(ticketsForDaniel);
     }
 
+    [Fact]
+    public async Task GetTicketsAsync_UnassignedOnly_ReturnsOnlyTicketsWithNoAssignee()
+    {
+        var tickets = await _sut.GetTicketsAsync(unassignedOnly: true);
+
+        var ticket = Assert.Single(tickets);
+        Assert.Equal(4, ticket.Id);
+        Assert.Null(ticket.AssignedUserId);
+    }
+
+    [Fact]
+    public async Task GetTicketsAsync_UnassignedOnly_CombinesWithStatus()
+    {
+        var open = await _sut.GetTicketsAsync(TicketStatus.Open, unassignedOnly: true);
+        var closed = await _sut.GetTicketsAsync(TicketStatus.Closed, unassignedOnly: true);
+
+        Assert.Single(open);
+        Assert.Empty(closed);
+    }
+
+    [Fact]
+    public async Task GetTicketsAsync_ThrowsArgumentException_WhenUserAndUnassignedAreCombined()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _sut.GetTicketsAsync(assignedUserId: 1, unassignedOnly: true));
+    }
+
     public void Dispose()
     {
         _db.Dispose();

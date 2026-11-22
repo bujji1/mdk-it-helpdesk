@@ -14,7 +14,7 @@ A small internal tool for an IT helpdesk team to manage support tickets. Built w
 
 - Create, view, update and list tickets
 - Assign a ticket to a user, or unassign it
-- Filter tickets by status and/or assigned user
+- Filter tickets by status and/or assigned user, including unassigned tickets
 - Creation and update timestamps tracked automatically, in UTC
 - The same operations exposed as a REST API, documented with Swagger
 
@@ -65,7 +65,7 @@ The Blazor pages and the REST controllers both call the same application service
 
 | Method | Path | Purpose | Responses |
 |---|---|---|---|
-| GET | `/api/tickets?status=&assignedUserId=` | List tickets, optionally filtered | 200, 400 |
+| GET | `/api/tickets?status=&assignedUserId=&unassigned=` | List tickets, optionally filtered by status and by assignee (or unassigned only) | 200, 400 |
 | GET | `/api/tickets/{id}` | Get one ticket | 200, 404 |
 | POST | `/api/tickets` | Create a ticket (starts as Open) | 201, 400 |
 | PUT | `/api/tickets/{id}` | Update title, description and status | 200, 400, 404 |

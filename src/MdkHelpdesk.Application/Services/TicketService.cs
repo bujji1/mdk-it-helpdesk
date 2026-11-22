@@ -24,8 +24,14 @@ public sealed class TicketService : ITicketService
     public async Task<IReadOnlyList<TicketResponse>> GetTicketsAsync(
         TicketStatus? status = null,
         int? assignedUserId = null,
+        bool unassignedOnly = false,
         CancellationToken cancellationToken = default)
     {
+        if (unassignedOnly && assignedUserId.HasValue)
+        {
+            throw new ArgumentException("Filter by an assigned user or by unassigned tickets, not both.");
+        }
+
         IQueryable<Ticket> query = _db.Tickets
             .AsNoTracking()
             .Include(t => t.AssignedUser);
@@ -39,6 +45,10 @@ public sealed class TicketService : ITicketService
         if (assignedUserId.HasValue)
         {
             query = query.Where(t => t.AssignedUserId == assignedUserId.Value);
+        }
+        else if (unassignedOnly)
+        {
+            query = query.Where(t => t.AssignedUserId == null);
         }
 
         var tickets = await query

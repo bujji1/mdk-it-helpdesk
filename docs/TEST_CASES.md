@@ -91,3 +91,7 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez, Priya Patel an
 | TC-6.5 | Click "Clear Filters" | Both dropdowns reset and all tickets are listed; the button is disabled when no filter is set | (visual check) |
 | TC-6.6 | Call `GET /api/tickets?status=Open&assignedUserId=1` | 200 OK with only Alice's open tickets | `GetTickets_FiltersByStatusAndAssignedUser` |
 | TC-6.7 | Call `GET /api/tickets?status=Done` | 400 Bad Request | `GetTickets_Returns400_WhenStatusFilterIsNotAKnownValue` |
+| TC-6.8 | Choose "Unassigned" under "Filter by Assigned User" | Only tickets with no assignee are listed | `GetTicketsAsync_UnassignedOnly_ReturnsOnlyTicketsWithNoAssignee`, `GetTickets_UnassignedFilter_ReturnsOnlyTicketsWithNoAssignee` |
+| TC-6.9 | Choose "Unassigned" together with a status | Only unassigned tickets with that status are listed | `GetTicketsAsync_UnassignedOnly_CombinesWithStatus` |
+| TC-6.10 | Choose "Daniel Kim", who has no tickets | "No tickets match the selected filters." is shown | `SeedData_IncludesAnUnassignedTicket_AndAUserWithNoTickets` |
+| TC-6.11 | Call `GET /api/tickets?assignedUserId=1&unassigned=true` | 400 Bad Request: the two filters cannot be combined | `GetTicketsAsync_ThrowsArgumentException_WhenUserAndUnassignedAreCombined`, `GetTickets_Returns400_WhenUserAndUnassignedFiltersAreCombined` |

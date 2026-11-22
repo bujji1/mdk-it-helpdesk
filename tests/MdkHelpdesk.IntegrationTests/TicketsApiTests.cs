@@ -243,6 +243,25 @@ public sealed class TicketsApiTests : IClassFixture<CustomWebApplicationFactory>
             users.Select(u => u.Name));
     }
 
+    [Fact]
+    public async Task GetTickets_UnassignedFilter_ReturnsOnlyTicketsWithNoAssignee()
+    {
+        var tickets = await _client.GetFromJsonAsync<List<TicketResponse>>(
+            "/api/tickets?unassigned=true", JsonOptions);
+
+        Assert.NotNull(tickets);
+        Assert.Contains(tickets, t => t.Id == 4);
+        Assert.All(tickets, t => Assert.Null(t.AssignedUserId));
+    }
+
+    [Fact]
+    public async Task GetTickets_Returns400_WhenUserAndUnassignedFiltersAreCombined()
+    {
+        var response = await _client.GetAsync("/api/tickets?assignedUserId=1&unassigned=true");
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
     private async Task<TicketResponse> CreateTicketAsync(string title, int? assignedUserId = null)
     {
         var response = await _client.PostAsJsonAsync("/api/tickets", new CreateTicketRequest

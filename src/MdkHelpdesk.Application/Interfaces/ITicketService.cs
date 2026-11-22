@@ -9,11 +9,14 @@ namespace MdkHelpdesk.Application.Interfaces;
 public interface ITicketService
 {
     /// <summary>
-    /// Returns tickets, most recently updated first, optionally filtered by status and/or assigned user.
+    /// Returns tickets, most recently updated first, optionally filtered by status and by assignment
+    /// (either a specific user, or only tickets with no assignee).
     /// </summary>
+    /// <exception cref="ArgumentException">Both a user and "unassigned only" were requested.</exception>
     Task<IReadOnlyList<TicketResponse>> GetTicketsAsync(
         TicketStatus? status = null,
         int? assignedUserId = null,
+        bool unassignedOnly = false,
         CancellationToken cancellationToken = default);
 
     /// <summary>

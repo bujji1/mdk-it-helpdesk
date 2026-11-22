@@ -30,8 +30,9 @@
         </div>
         <div class="col-md-4">
             <label class="form-label" for="userFilter">Filter by Assigned User</label>
-            <select id="userFilter" class="form-select" @bind="SelectedUserId" @bind:after="LoadTicketsAsync">
+            <select id="userFilter" class="form-select" @bind="SelectedAssignee" @bind:after="LoadTicketsAsync">
                 <option value="">All Users</option>
+                <option value="@UnassignedOption">Unassigned</option>
                 @foreach (var user in _users)
                 {
                     <option value="@user.Id">@user.Name</option>
@@ -95,10 +96,14 @@ else
     private IReadOnlyList<UserResponse> _users = Array.Empty<UserResponse>();
     private bool _isLoading = true;
 
-    private TicketStatus? SelectedStatus { get; set; }
-    private int? SelectedUserId { get; set; }
+    private const string UnassignedOption = "unassigned";
 
-    private bool HasFilters => SelectedStatus.HasValue || SelectedUserId.HasValue;
+    private TicketStatus? SelectedStatus { get; set; }
+
+    // "" = all users, "unassigned" = tickets with no assignee, otherwise a user ID.
+    private string SelectedAssignee { get; set; } = string.Empty;
+
+    private bool HasFilters => SelectedStatus.HasValue || SelectedAssignee.Length > 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -109,14 +114,17 @@ else
     private async Task LoadTicketsAsync()
     {
         _isLoading = true;
-        _tickets = await TicketService.GetTicketsAsync(SelectedStatus, SelectedUserId);
+        var unassignedOnly = SelectedAssignee == UnassignedOption;
+        int? userId = int.TryParse(SelectedAssignee, out var parsed) ? parsed : null;
+
+        _tickets = await TicketService.GetTicketsAsync(SelectedStatus, userId, unassignedOnly);
         _isLoading = false;
     }
 
     private async Task ClearFiltersAsync()
     {
         SelectedStatus = null;
-        SelectedUserId = null;
+        SelectedAssignee = string.Empty;
         await LoadTicketsAsync();
     }
 }
