@@ -77,3 +77,17 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel
 | TC-5.5 | Call `PATCH /api/tickets/1/assign` with `{"assignedUserId": 2}` | 200 OK with the ticket assigned to Bob Martinez | (integration test, to be added) |
 | TC-5.6 | Call `PATCH /api/tickets/1/assign` with `{"assignedUserId": 9999}` | 400 Bad Request; the previous assignee is kept | `AssignAsync_ThrowsArgumentException_AndKeepsAssignee_WhenUserDoesNotExist` |
 | TC-5.7 | Call `PATCH /api/tickets/9999/assign` | 404 Not Found | `AssignAsync_ReturnsNull_WhenTicketDoesNotExist` |
+
+## Story 6: Filter tickets by status or assigned user
+
+> As a helpdesk agent, I can filter the ticket list by status or assigned user, so that I can focus on the tickets that matter to me.
+
+| ID | Steps | Expected result | Automated by |
+|---|---|---|---|
+| TC-6.1 | On the list page, choose "Closed" under "Filter by Status" | Only closed tickets are listed; the count above the table matches | `GetTicketsAsync_FiltersByStatus` |
+| TC-6.2 | Choose "Bob Martinez" under "Filter by Assigned User" | Only Bob's tickets are listed | `GetTicketsAsync_FiltersByAssignedUser` |
+| TC-6.3 | Choose both a status and a user | Only tickets matching both are listed | `GetTicketsAsync_CombinesStatusAndUserFilters` |
+| TC-6.4 | Choose a combination that matches nothing | "No tickets match the selected filters." is shown | `GetTicketsAsync_ReturnsEmpty_WhenNoTicketMatches` |
+| TC-6.5 | Click "Clear Filters" | Both dropdowns reset and all tickets are listed; the button is disabled when no filter is set | (visual check) |
+| TC-6.6 | Call `GET /api/tickets?status=Open&assignedUserId=1` | 200 OK with only Alice's open tickets | (integration test, to be added) |
+| TC-6.7 | Call `GET /api/tickets?status=Done` | 400 Bad Request | (integration test, to be added) |

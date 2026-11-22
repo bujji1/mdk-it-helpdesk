@@ -1,4 +1,5 @@
 using MdkHelpdesk.Application.DTOs;
+using MdkHelpdesk.Domain.Enums;
 
 namespace MdkHelpdesk.Application.Interfaces;
 
@@ -8,9 +9,12 @@ namespace MdkHelpdesk.Application.Interfaces;
 public interface ITicketService
 {
     /// <summary>
-    /// Returns all tickets, most recently updated first.
+    /// Returns tickets, most recently updated first, optionally filtered by status and/or assigned user.
     /// </summary>
-    Task<IReadOnlyList<TicketResponse>> GetTicketsAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<TicketResponse>> GetTicketsAsync(
+        TicketStatus? status = null,
+        int? assignedUserId = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Returns a single ticket, or null when no ticket has the given ID.

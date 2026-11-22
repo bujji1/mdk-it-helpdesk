@@ -1,5 +1,6 @@
 using MdkHelpdesk.Application.DTOs;
 using MdkHelpdesk.Application.Interfaces;
+using MdkHelpdesk.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MdkHelpdesk.Web.Controllers;
@@ -20,14 +21,20 @@ public sealed class TicketsController : ControllerBase
     }
 
     /// <summary>
-    /// Lists all support tickets, most recently updated first.
+    /// Lists support tickets, most recently updated first, with optional filtering by status and/or assigned user.
     /// </summary>
+    /// <param name="status">Optional ticket status filter (Open, InProgress, Closed).</param>
+    /// <param name="assignedUserId">Optional assigned user ID filter.</param>
     /// <param name="cancellationToken">Request cancellation token.</param>
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<TicketResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<TicketResponse>>> GetAll(CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IReadOnlyList<TicketResponse>>> GetAll(
+        [FromQuery] TicketStatus? status,
+        [FromQuery] int? assignedUserId,
+        CancellationToken cancellationToken)
     {
-        var tickets = await _ticketService.GetTicketsAsync(cancellationToken);
+        var tickets = await _ticketService.GetTicketsAsync(status, assignedUserId, cancellationToken);
         return Ok(tickets);
     }
 

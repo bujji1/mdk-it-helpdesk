@@ -2,7 +2,9 @@
 @rendermode InteractiveServer
 @using MdkHelpdesk.Application.DTOs
 @using MdkHelpdesk.Application.Interfaces
+@using MdkHelpdesk.Domain.Enums
 @inject ITicketService TicketService
+@inject IUserService UserService
 
 <PageTitle>Support Tickets - MDK IT Helpdesk</PageTitle>
 
@@ -14,16 +16,47 @@
     <a class="btn btn-primary" href="/tickets/new">+ New Ticket</a>
 </div>
 
+<div class="card mb-4">
+    <div class="card-body row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label" for="statusFilter">Filter by Status</label>
+            <select id="statusFilter" class="form-select" @bind="SelectedStatus" @bind:after="LoadTicketsAsync">
+                <option value="">All Statuses</option>
+                @foreach (var status in Enum.GetValues<TicketStatus>())
+                {
+                    <option value="@status">@TicketStatusDisplay.Label(status)</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" for="userFilter">Filter by Assigned User</label>
+            <select id="userFilter" class="form-select" @bind="SelectedUserId" @bind:after="LoadTicketsAsync">
+                <option value="">All Users</option>
+                @foreach (var user in _users)
+                {
+                    <option value="@user.Id">@user.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-outline-secondary" @onclick="ClearFiltersAsync" disabled="@(!HasFilters)">Clear Filters</button>
+        </div>
+    </div>
+</div>
+
 @if (_isLoading)
 {
     <p><em>Loading tickets...</em></p>
 }
 else if (_tickets.Count == 0)
 {
-    <div class="alert alert-info">There are no tickets yet.</div>
+    <div class="alert alert-info">
+        @(HasFilters ? "No tickets match the selected filters." : "There are no tickets yet.")
+    </div>
 }
 else
 {
+    <p class="text-muted small mb-2">Showing @_tickets.Count ticket@(_tickets.Count == 1 ? "" : "s")</p>
     <div class="table-responsive">
         <table class="table table-striped table-hover align-middle">
             <thead>
@@ -59,11 +92,31 @@ else
 
 @code {
     private IReadOnlyList<TicketResponse> _tickets = Array.Empty<TicketResponse>();
+    private IReadOnlyList<UserResponse> _users = Array.Empty<UserResponse>();
     private bool _isLoading = true;
+
+    private TicketStatus? SelectedStatus { get; set; }
+    private int? SelectedUserId { get; set; }
+
+    private bool HasFilters => SelectedStatus.HasValue || SelectedUserId.HasValue;
 
     protected override async Task OnInitializedAsync()
     {
-        _tickets = await TicketService.GetTicketsAsync();
+        _users = await UserService.GetAllAsync();
+        await LoadTicketsAsync();
+    }
+
+    private async Task LoadTicketsAsync()
+    {
+        _isLoading = true;
+        _tickets = await TicketService.GetTicketsAsync(SelectedStatus, SelectedUserId);
         _isLoading = false;
+    }
+
+    private async Task ClearFiltersAsync()
+    {
+        SelectedStatus = null;
+        SelectedUserId = null;
+        await LoadTicketsAsync();
     }
 }
