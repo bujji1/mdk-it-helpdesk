@@ -29,6 +29,16 @@ public sealed class TicketService : ITicketService
         return tickets.Select(MapToResponse).ToList();
     }
 
+    public async Task<TicketResponse?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var ticket = await _db.Tickets
+            .AsNoTracking()
+            .Include(t => t.AssignedUser)
+            .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
+
+        return ticket is null ? null : MapToResponse(ticket);
+    }
+
     private static TicketResponse MapToResponse(Ticket ticket) => new(
         ticket.Id,
         ticket.Title,

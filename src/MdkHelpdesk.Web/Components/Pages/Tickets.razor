@@ -2,7 +2,6 @@
 @rendermode InteractiveServer
 @using MdkHelpdesk.Application.DTOs
 @using MdkHelpdesk.Application.Interfaces
-@using MdkHelpdesk.Domain.Enums
 @inject ITicketService TicketService
 
 <PageTitle>Support Tickets - MDK IT Helpdesk</PageTitle>
@@ -39,9 +38,11 @@ else
                 {
                     <tr>
                         <td>#@ticket.Id</td>
-                        <td class="fw-semibold">@ticket.Title</td>
                         <td>
-                            <span class="badge @GetStatusBadgeClass(ticket.Status)">@GetStatusLabel(ticket.Status)</span>
+                            <a href="/tickets/@ticket.Id" class="fw-semibold text-decoration-none">@ticket.Title</a>
+                        </td>
+                        <td>
+                            <span class="badge @TicketStatusDisplay.BadgeClass(ticket.Status)">@TicketStatusDisplay.Label(ticket.Status)</span>
                         </td>
                         <td>@(ticket.AssignedUserName ?? "Unassigned")</td>
                         <td>@ticket.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
@@ -62,18 +63,4 @@ else
         _tickets = await TicketService.GetTicketsAsync();
         _isLoading = false;
     }
-
-    private static string GetStatusLabel(TicketStatus status) => status switch
-    {
-        TicketStatus.InProgress => "In Progress",
-        _ => status.ToString()
-    };
-
-    private static string GetStatusBadgeClass(TicketStatus status) => status switch
-    {
-        TicketStatus.Open => "bg-danger",
-        TicketStatus.InProgress => "bg-warning text-dark",
-        TicketStatus.Closed => "bg-success",
-        _ => "bg-secondary"
-    };
 }
