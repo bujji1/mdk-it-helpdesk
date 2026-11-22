@@ -40,6 +40,17 @@ public sealed class UpdateTicketRequest
 }
 
 /// <summary>
+/// Payload for assigning or unassigning a ticket.
+/// </summary>
+public sealed class AssignTicketRequest
+{
+    /// <summary>
+    /// Target user ID, or null to unassign the ticket.
+    /// </summary>
+    public int? AssignedUserId { get; set; }
+}
+
+/// <summary>
 /// Public representation of a support ticket returned by APIs and UI services.
 /// </summary>
 public sealed record TicketResponse(

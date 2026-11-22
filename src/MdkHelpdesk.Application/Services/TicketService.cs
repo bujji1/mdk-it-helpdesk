@@ -84,6 +84,24 @@ public sealed class TicketService : ITicketService
         return await GetByIdAsync(ticket.Id, cancellationToken);
     }
 
+    public async Task<TicketResponse?> AssignAsync(int id, int? assignedUserId, CancellationToken cancellationToken = default)
+    {
+        var ticket = await _db.Tickets.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
+        if (ticket is null)
+        {
+            return null;
+        }
+
+        await ValidateAssignedUserExistsAsync(assignedUserId, cancellationToken);
+
+        ticket.AssignedUserId = assignedUserId;
+        await _db.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Assigned Ticket {TicketId} to User {AssignedUserId}", ticket.Id, assignedUserId);
+
+        return await GetByIdAsync(ticket.Id, cancellationToken);
+    }
+
     private async Task ValidateAssignedUserExistsAsync(int? assignedUserId, CancellationToken cancellationToken)
     {
         if (!assignedUserId.HasValue)

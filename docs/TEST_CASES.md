@@ -63,3 +63,17 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel
 | TC-4.7 | Call `PUT /api/tickets/1` with a valid body | 200 OK with the updated ticket | (integration test, to be added) |
 | TC-4.8 | Call `PUT /api/tickets/1` with `"status": "Done"` | 400 Bad Request | (integration test, to be added) |
 | TC-4.9 | Call `PUT /api/tickets/9999` with a valid body | 404 Not Found | (integration test, to be added) |
+
+## Story 5: Assign a ticket to a user
+
+> As a helpdesk agent, I can assign a ticket to a user, so that it is clear who is responsible for it.
+
+| ID | Steps | Expected result | Automated by |
+|---|---|---|---|
+| TC-5.1 | Open a ticket, pick a different user under "Assign To", click "Update Assignee" | "Assigned To" shows the new user, a confirmation message appears, and "Last Updated" moves forward | `AssignAsync_ReassignsTicketAndAdvancesUpdatedAt` |
+| TC-5.2 | Pick "-- Unassigned --" and click "Update Assignee" | "Assigned To" shows "Unassigned" | `AssignAsync_WithNull_UnassignsTicket` |
+| TC-5.3 | Open a ticket without changing the dropdown | "Update Assignee" is disabled until a different user is picked | (visual check) |
+| TC-5.4 | Go back to the list after assigning | The list shows the new assignee | (visual check) |
+| TC-5.5 | Call `PATCH /api/tickets/1/assign` with `{"assignedUserId": 2}` | 200 OK with the ticket assigned to Bob Martinez | (integration test, to be added) |
+| TC-5.6 | Call `PATCH /api/tickets/1/assign` with `{"assignedUserId": 9999}` | 400 Bad Request; the previous assignee is kept | `AssignAsync_ThrowsArgumentException_AndKeepsAssignee_WhenUserDoesNotExist` |
+| TC-5.7 | Call `PATCH /api/tickets/9999/assign` | 404 Not Found | `AssignAsync_ReturnsNull_WhenTicketDoesNotExist` |
