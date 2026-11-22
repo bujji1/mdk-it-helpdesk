@@ -252,6 +252,55 @@ public sealed class TicketServiceTests : IDisposable
         Assert.Null(updated);
     }
 
+    [Fact]
+    public async Task GetTicketsAsync_FiltersByStatus()
+    {
+        var tickets = await _sut.GetTicketsAsync(status: TicketStatus.Closed);
+
+        var ticket = Assert.Single(tickets);
+        Assert.Equal(3, ticket.Id);
+        Assert.Equal(TicketStatus.Closed, ticket.Status);
+    }
+
+    [Fact]
+    public async Task GetTicketsAsync_FiltersByAssignedUser()
+    {
+        var tickets = await _sut.GetTicketsAsync(assignedUserId: 2);
+
+        var ticket = Assert.Single(tickets);
+        Assert.Equal("Bob Martinez", ticket.AssignedUserName);
+    }
+
+    [Fact]
+    public async Task GetTicketsAsync_CombinesStatusAndUserFilters()
+    {
+        await _sut.CreateAsync(new CreateTicketRequest
+        {
+            Title = "Second open ticket for Alice",
+            Description = "Keyboard keys sticking.",
+            AssignedUserId = 1
+        });
+
+        var openForAlice = await _sut.GetTicketsAsync(TicketStatus.Open, 1);
+        var closedForAlice = await _sut.GetTicketsAsync(TicketStatus.Closed, 1);
+
+        Assert.Equal(2, openForAlice.Count);
+        Assert.All(openForAlice, t =>
+        {
+            Assert.Equal(TicketStatus.Open, t.Status);
+            Assert.Equal(1, t.AssignedUserId);
+        });
+        Assert.Empty(closedForAlice);
+    }
+
+    [Fact]
+    public async Task GetTicketsAsync_ReturnsEmpty_WhenNoTicketMatches()
+    {
+        var tickets = await _sut.GetTicketsAsync(assignedUserId: 9999);
+
+        Assert.Empty(tickets);
+    }
+
     public void Dispose()
     {
         _db.Dispose();

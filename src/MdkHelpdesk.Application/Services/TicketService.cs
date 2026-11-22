@@ -21,11 +21,27 @@ public sealed class TicketService : ITicketService
         _logger = logger;
     }
 
-    public async Task<IReadOnlyList<TicketResponse>> GetTicketsAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<TicketResponse>> GetTicketsAsync(
+        TicketStatus? status = null,
+        int? assignedUserId = null,
+        CancellationToken cancellationToken = default)
     {
-        var tickets = await _db.Tickets
+        IQueryable<Ticket> query = _db.Tickets
             .AsNoTracking()
-            .Include(t => t.AssignedUser)
+            .Include(t => t.AssignedUser);
+
+        // Filters are applied in the database, not in memory.
+        if (status.HasValue)
+        {
+            query = query.Where(t => t.Status == status.Value);
+        }
+
+        if (assignedUserId.HasValue)
+        {
+            query = query.Where(t => t.AssignedUserId == assignedUserId.Value);
+        }
+
+        var tickets = await query
             .OrderByDescending(t => t.UpdatedAt)
             .ThenByDescending(t => t.Id)
             .ToListAsync(cancellationToken);
