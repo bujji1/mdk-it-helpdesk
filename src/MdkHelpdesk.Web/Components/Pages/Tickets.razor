@@ -1,0 +1,79 @@
+@page "/"
+@rendermode InteractiveServer
+@using MdkHelpdesk.Application.DTOs
+@using MdkHelpdesk.Application.Interfaces
+@using MdkHelpdesk.Domain.Enums
+@inject ITicketService TicketService
+
+<PageTitle>Support Tickets - MDK IT Helpdesk</PageTitle>
+
+<div class="mb-3">
+    <h1 class="h2 mb-0">Support Tickets</h1>
+    <small class="text-muted">Internal IT Helpdesk</small>
+</div>
+
+@if (_isLoading)
+{
+    <p><em>Loading tickets...</em></p>
+}
+else if (_tickets.Count == 0)
+{
+    <div class="alert alert-info">There are no tickets yet.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Assigned To</th>
+                    <th>Created (UTC)</th>
+                    <th>Updated (UTC)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ticket in _tickets)
+                {
+                    <tr>
+                        <td>#@ticket.Id</td>
+                        <td class="fw-semibold">@ticket.Title</td>
+                        <td>
+                            <span class="badge @GetStatusBadgeClass(ticket.Status)">@GetStatusLabel(ticket.Status)</span>
+                        </td>
+                        <td>@(ticket.AssignedUserName ?? "Unassigned")</td>
+                        <td>@ticket.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@ticket.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private IReadOnlyList<TicketResponse> _tickets = Array.Empty<TicketResponse>();
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _tickets = await TicketService.GetTicketsAsync();
+        _isLoading = false;
+    }
+
+    private static string GetStatusLabel(TicketStatus status) => status switch
+    {
+        TicketStatus.InProgress => "In Progress",
+        _ => status.ToString()
+    };
+
+    private static string GetStatusBadgeClass(TicketStatus status) => status switch
+    {
+        TicketStatus.Open => "bg-danger",
+        TicketStatus.InProgress => "bg-warning text-dark",
+        TicketStatus.Closed => "bg-success",
+        _ => "bg-secondary"
+    };
+}
