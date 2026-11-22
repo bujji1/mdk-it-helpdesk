@@ -28,13 +28,16 @@ else
 
     <div class="card mb-3">
         <div class="card-body">
-            <p class="mb-2">
-                <strong>Status:</strong>
-                <span class="badge @TicketStatusDisplay.BadgeClass(_ticket.Status)">@TicketStatusDisplay.Label(_ticket.Status)</span>
-            </p>
-            <p class="mb-2"><strong>Assigned To:</strong> @(_ticket.AssignedUserName ?? "Unassigned")</p>
-            <p class="mb-2"><strong>Created (UTC):</strong> @_ticket.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
-            <p class="mb-3"><strong>Last Updated (UTC):</strong> @_ticket.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+            <dl class="detail-grid">
+                <dt>Status</dt>
+                <dd><span class="badge @TicketStatusDisplay.BadgeClass(_ticket.Status)">@TicketStatusDisplay.Label(_ticket.Status)</span></dd>
+                <dt>Assigned To</dt>
+                <dd>@(_ticket.AssignedUserName ?? "Unassigned")</dd>
+                <dt>Created (UTC)</dt>
+                <dd>@_ticket.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+                <dt>Last Updated (UTC)</dt>
+                <dd>@_ticket.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+            </dl>
             <hr />
             <h2 class="h5">Description</h2>
             <p class="mb-0" style="white-space: pre-wrap;">@_ticket.Description</p>

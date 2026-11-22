@@ -13,11 +13,14 @@ public static class TicketStatusDisplay
         _ => status.ToString()
     };
 
+    /// <summary>
+    /// CSS class for the status badge; the colours are defined in wwwroot/app.css.
+    /// </summary>
     public static string BadgeClass(TicketStatus status) => status switch
     {
-        TicketStatus.Open => "bg-danger",
-        TicketStatus.InProgress => "bg-warning text-dark",
-        TicketStatus.Closed => "bg-success",
+        TicketStatus.Open => "status-open",
+        TicketStatus.InProgress => "status-progress",
+        TicketStatus.Closed => "status-closed",
         _ => "bg-secondary"
     };
 }
