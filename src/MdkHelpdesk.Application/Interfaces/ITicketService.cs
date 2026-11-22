@@ -27,4 +27,11 @@ public interface ITicketService
     /// Updates a ticket's title, description and status. Returns null when the ticket does not exist.
     /// </summary>
     Task<TicketResponse?> UpdateAsync(int id, UpdateTicketRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Assigns a ticket to a user, or unassigns it when <paramref name="assignedUserId"/> is null.
+    /// Returns null when the ticket does not exist.
+    /// </summary>
+    /// <exception cref="ArgumentException">The assigned user does not exist.</exception>
+    Task<TicketResponse?> AssignAsync(int id, int? assignedUserId, CancellationToken cancellationToken = default);
 }

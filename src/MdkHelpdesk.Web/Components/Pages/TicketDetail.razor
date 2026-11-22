@@ -3,6 +3,7 @@
 @using MdkHelpdesk.Application.DTOs
 @using MdkHelpdesk.Application.Interfaces
 @inject ITicketService TicketService
+@inject IUserService UserService
 
 <PageTitle>Ticket #@Id - MDK IT Helpdesk</PageTitle>
 
@@ -25,7 +26,7 @@ else
         </div>
     </div>
 
-    <div class="card">
+    <div class="card mb-3">
         <div class="card-body">
             <p class="mb-2">
                 <strong>Status:</strong>
@@ -39,6 +40,32 @@ else
             <p class="mb-0" style="white-space: pre-wrap;">@_ticket.Description</p>
         </div>
     </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label" for="assignee">Assign To</label>
+                    <select id="assignee" class="form-select" @bind="_selectedUserId">
+                        <option value="">-- Unassigned --</option>
+                        @foreach (var user in _users)
+                        {
+                            <option value="@user.Id">@user.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-outline-primary" @onclick="AssignAsync" disabled="@(_isAssigning || _selectedUserId == _ticket.AssignedUserId)">
+                        @(_isAssigning ? "Saving..." : "Update Assignee")
+                    </button>
+                </div>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(_assignMessage))
+            {
+                <div class="text-success mt-2" role="status">@_assignMessage</div>
+            }
+        </div>
+    </div>
 }
 
 @code {
@@ -46,12 +73,41 @@ else
     public int Id { get; set; }
 
     private TicketResponse? _ticket;
+    private IReadOnlyList<UserResponse> _users = Array.Empty<UserResponse>();
+    private int? _selectedUserId;
     private bool _isLoading = true;
+    private bool _isAssigning;
+    private string? _assignMessage;
 
     protected override async Task OnParametersSetAsync()
     {
         _isLoading = true;
+        _assignMessage = null;
+        _users = await UserService.GetAllAsync();
         _ticket = await TicketService.GetByIdAsync(Id);
+        _selectedUserId = _ticket?.AssignedUserId;
         _isLoading = false;
+    }
+
+    private async Task AssignAsync()
+    {
+        _isAssigning = true;
+        _assignMessage = null;
+
+        var updated = await TicketService.AssignAsync(Id, _selectedUserId);
+        if (updated is not null)
+        {
+            _ticket = updated;
+            _assignMessage = updated.AssignedUserName is null
+                ? "Ticket is now unassigned."
+                : $"Ticket assigned to {updated.AssignedUserName}.";
+        }
+        else
+        {
+            // The ticket disappeared between loading and saving.
+            _ticket = null;
+        }
+
+        _isAssigning = false;
     }
 }

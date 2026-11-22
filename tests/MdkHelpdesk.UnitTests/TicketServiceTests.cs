@@ -210,6 +210,48 @@ public sealed class TicketServiceTests : IDisposable
         Assert.Null(updated);
     }
 
+    [Fact]
+    public async Task AssignAsync_ReassignsTicketAndAdvancesUpdatedAt()
+    {
+        var original = await _sut.GetByIdAsync(1);
+        Assert.NotNull(original);
+
+        var updated = await _sut.AssignAsync(1, 3);
+
+        Assert.NotNull(updated);
+        Assert.Equal(3, updated.AssignedUserId);
+        Assert.Equal("Priya Patel", updated.AssignedUserName);
+        Assert.True(updated.UpdatedAt > original.UpdatedAt);
+    }
+
+    [Fact]
+    public async Task AssignAsync_WithNull_UnassignsTicket()
+    {
+        var updated = await _sut.AssignAsync(1, null);
+
+        Assert.NotNull(updated);
+        Assert.Null(updated.AssignedUserId);
+        Assert.Null(updated.AssignedUserName);
+    }
+
+    [Fact]
+    public async Task AssignAsync_ThrowsArgumentException_AndKeepsAssignee_WhenUserDoesNotExist()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() => _sut.AssignAsync(1, 9999));
+
+        var unchanged = await _sut.GetByIdAsync(1);
+        Assert.NotNull(unchanged);
+        Assert.Equal(1, unchanged.AssignedUserId);
+    }
+
+    [Fact]
+    public async Task AssignAsync_ReturnsNull_WhenTicketDoesNotExist()
+    {
+        var updated = await _sut.AssignAsync(9999, 1);
+
+        Assert.Null(updated);
+    }
+
     public void Dispose()
     {
         _db.Dispose();

@@ -79,4 +79,23 @@ public sealed class TicketsController : ControllerBase
         var updated = await _ticketService.UpdateAsync(id, request, cancellationToken);
         return updated is null ? NotFound() : Ok(updated);
     }
+
+    /// <summary>
+    /// Assigns a support ticket to a helpdesk user, or unassigns it.
+    /// </summary>
+    /// <param name="id">Ticket ID.</param>
+    /// <param name="request">Assignment payload (a null AssignedUserId unassigns the ticket).</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
+    [HttpPatch("{id:int}/assign")]
+    [ProducesResponseType(typeof(TicketResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<TicketResponse>> Assign(
+        int id,
+        [FromBody] AssignTicketRequest request,
+        CancellationToken cancellationToken)
+    {
+        var updated = await _ticketService.AssignAsync(id, request.AssignedUserId, cancellationToken);
+        return updated is null ? NotFound() : Ok(updated);
+    }
 }
