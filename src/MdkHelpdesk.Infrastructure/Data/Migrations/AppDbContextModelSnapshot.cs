@@ -76,7 +76,7 @@ namespace MdkHelpdesk.Infrastructure.Data.Migrations
                             Id = 2,
                             AssignedUserId = 2,
                             CreatedAt = new DateTime(2026, 11, 1, 12, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Grant read/send-as permissions for legal-intake@mdklegal.com.",
+                            Description = "Grant read/send-as permissions for legal-intake@example.com.",
                             Status = "InProgress",
                             Title = "Request Outlook shared mailbox access",
                             UpdatedAt = new DateTime(2026, 11, 1, 12, 0, 0, 0, DateTimeKind.Utc)
@@ -90,6 +90,15 @@ namespace MdkHelpdesk.Infrastructure.Data.Migrations
                             Status = "Closed",
                             Title = "Conference room projector HDMI issue",
                             UpdatedAt = new DateTime(2026, 11, 1, 12, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2026, 11, 2, 9, 30, 0, 0, DateTimeKind.Utc),
+                            Description = "New hire starts Monday; needs a laptop, an email account and VPN access set up.",
+                            Status = "Open",
+                            Title = "New starter needs laptop and accounts",
+                            UpdatedAt = new DateTime(2026, 11, 2, 9, 30, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -122,20 +131,26 @@ namespace MdkHelpdesk.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            Email = "alice.johnson@mdklegal.com",
+                            Email = "alice.johnson@example.com",
                             Name = "Alice Johnson"
                         },
                         new
                         {
                             Id = 2,
-                            Email = "bob.martinez@mdklegal.com",
+                            Email = "bob.martinez@example.com",
                             Name = "Bob Martinez"
                         },
                         new
                         {
                             Id = 3,
-                            Email = "priya.patel@mdklegal.com",
+                            Email = "priya.patel@example.com",
                             Name = "Priya Patel"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Email = "daniel.kim@example.com",
+                            Name = "Daniel Kim"
                         });
                 });
 

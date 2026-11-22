@@ -39,7 +39,7 @@ public sealed class TicketServiceTests : IDisposable
     {
         var tickets = await _sut.GetTicketsAsync();
 
-        Assert.Equal(3, tickets.Count);
+        Assert.Equal(4, tickets.Count);
 
         var vpnTicket = Assert.Single(tickets, t => t.Id == 1);
         Assert.Equal("VPN connection drops intermittently", vpnTicket.Title);
@@ -59,7 +59,7 @@ public sealed class TicketServiceTests : IDisposable
 
         var tickets = await _sut.GetTicketsAsync();
 
-        Assert.Equal(4, tickets.Count);
+        Assert.Equal(5, tickets.Count);
         Assert.Equal("Laptop will not boot", tickets[0].Title);
     }
 
@@ -158,7 +158,7 @@ public sealed class TicketServiceTests : IDisposable
             }));
 
         Assert.Contains("9999", ex.Message);
-        Assert.Equal(3, await _db.Tickets.CountAsync());
+        Assert.Equal(4, await _db.Tickets.CountAsync());
     }
 
     [Fact]
@@ -299,6 +299,17 @@ public sealed class TicketServiceTests : IDisposable
         var tickets = await _sut.GetTicketsAsync(assignedUserId: 9999);
 
         Assert.Empty(tickets);
+    }
+
+    [Fact]
+    public async Task SeedData_IncludesAnUnassignedTicket_AndAUserWithNoTickets()
+    {
+        var unassigned = await _sut.GetByIdAsync(4);
+        var ticketsForDaniel = await _sut.GetTicketsAsync(assignedUserId: 4);
+
+        Assert.NotNull(unassigned);
+        Assert.Null(unassigned.AssignedUserId);
+        Assert.Empty(ticketsForDaniel);
     }
 
     public void Dispose()

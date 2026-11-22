@@ -25,7 +25,7 @@ A small internal tool for an IT helpdesk team to manage support tickets. Built w
 # 1. Install the EF Core CLI (once)
 dotnet tool install --global dotnet-ef
 
-# 2. Create the database and seed data (3 users, 3 tickets)
+# 2. Create the database and seed data (4 users, 4 tickets)
 dotnet ef database update --project src/MdkHelpdesk.Infrastructure --startup-project src/MdkHelpdesk.Web
 
 # 3. Run the app

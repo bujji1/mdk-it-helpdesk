@@ -2,7 +2,7 @@
 
 Manual test cases, grouped by user story. The last column names the automated test that covers each case: unit tests live in `tests/MdkHelpdesk.UnitTests`, integration tests (full HTTP pipeline) in `tests/MdkHelpdesk.IntegrationTests`. Cases marked "(visual check)" are verified by hand in the browser.
 
-Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel; tickets #1 (Open, Alice), #2 (In Progress, Bob) and #3 (Closed, Priya).
+Seed data used by these cases: users Alice Johnson, Bob Martinez, Priya Patel and Daniel Kim (who has no tickets); tickets #1 (Open, Alice), #2 (In Progress, Bob), #3 (Closed, Priya) and #4 (Open, unassigned).
 
 ## Story 1: See a list of all tickets
 
@@ -10,7 +10,7 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel
 
 | ID | Steps | Expected result | Automated by |
 |---|---|---|---|
-| TC-1.1 | Open the home page `/` | A table lists the three seeded tickets with ID, title, status, assignee, created and updated times | `GetTicketsAsync_ReturnsSeededTicketsWithAssigneeNames`, `HomePage_RendersTheTicketList` |
+| TC-1.1 | Open the home page `/` | A table lists the four seeded tickets with ID, title, status, assignee, created and updated times | `GetTicketsAsync_ReturnsSeededTicketsWithAssigneeNames`, `HomePage_RendersTheTicketList` |
 | TC-1.2 | Look at the Status column | Open, In Progress and Closed are shown as distinct coloured badges | (visual check) |
 | TC-1.3 | Look at the order of the rows | The most recently updated ticket is first | `GetTicketsAsync_ReturnsMostRecentlyUpdatedFirst` |
 | TC-1.4 | View a ticket that has no assignee | The Assigned To column shows "Unassigned" | `GetTicketsAsync_ReturnsNullAssigneeName_WhenTicketIsUnassigned` |
@@ -46,7 +46,7 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel
 | TC-3.8 | Call `POST /api/tickets` with a valid body | 201 Created, a `Location` header pointing at the new ticket, and the ticket as JSON | `CreateTicket_Returns201WithLocation_AndTicketCanBeFetched` |
 | TC-3.9 | Call `POST /api/tickets` with an empty title | 400 Bad Request listing the validation errors | `CreateTicket_Returns400WithFieldErrors_WhenTitleIsEmpty` |
 | TC-3.10 | Call `POST /api/tickets` with `assignedUserId` 9999 | 400 Bad Request, "Assigned user with ID 9999 was not found."; no ticket is created | `CreateAsync_ThrowsArgumentException_WhenAssignedUserDoesNotExist`, `CreateTicket_Returns400ProblemDetails_WhenAssigneeDoesNotExist` |
-| TC-3.11 | Call `GET /api/users` | 200 OK with the three users ordered by name | `GetAllAsync_ReturnsSeededUsersOrderedByName` |
+| TC-3.11 | Call `GET /api/users` | 200 OK with the four users ordered by name | `GetAllAsync_ReturnsSeededUsersOrderedByName` |
 
 ## Story 4: Update a ticket's details and status
 

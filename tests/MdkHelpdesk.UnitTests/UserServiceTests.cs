@@ -32,7 +32,7 @@ public sealed class UserServiceTests : IDisposable
         var users = await _sut.GetAllAsync();
 
         Assert.Equal(
-            new[] { "Alice Johnson", "Bob Martinez", "Priya Patel" },
+            new[] { "Alice Johnson", "Bob Martinez", "Daniel Kim", "Priya Patel" },
             users.Select(u => u.Name));
         Assert.All(users, u => Assert.False(string.IsNullOrWhiteSpace(u.Email)));
     }
