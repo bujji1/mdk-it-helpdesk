@@ -1,20 +1,24 @@
 using MdkHelpdesk.Application.DTOs;
 using MdkHelpdesk.Application.Interfaces;
 using MdkHelpdesk.Domain.Entities;
+using MdkHelpdesk.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace MdkHelpdesk.Application.Services;
 
 /// <summary>
-/// Implements core helpdesk ticket workflows on top of EF Core persistence.
+/// Implements core helpdesk ticket workflows with validation, structured logging, and EF Core persistence.
 /// </summary>
 public sealed class TicketService : ITicketService
 {
     private readonly IAppDbContext _db;
+    private readonly ILogger<TicketService> _logger;
 
-    public TicketService(IAppDbContext db)
+    public TicketService(IAppDbContext db, ILogger<TicketService> logger)
     {
         _db = db;
+        _logger = logger;
     }
 
     public async Task<IReadOnlyList<TicketResponse>> GetTicketsAsync(CancellationToken cancellationToken = default)
@@ -37,6 +41,42 @@ public sealed class TicketService : ITicketService
             .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
 
         return ticket is null ? null : MapToResponse(ticket);
+    }
+
+    public async Task<TicketResponse> CreateAsync(CreateTicketRequest request, CancellationToken cancellationToken = default)
+    {
+        await ValidateAssignedUserExistsAsync(request.AssignedUserId, cancellationToken);
+
+        var ticket = new Ticket
+        {
+            Title = request.Title.Trim(),
+            Description = request.Description.Trim(),
+            Status = TicketStatus.Open,
+            AssignedUserId = request.AssignedUserId
+        };
+
+        _db.Tickets.Add(ticket);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Created Ticket {TicketId} with AssignedUserId {AssignedUserId}",
+            ticket.Id, ticket.AssignedUserId);
+
+        return (await GetByIdAsync(ticket.Id, cancellationToken))!;
+    }
+
+    private async Task ValidateAssignedUserExistsAsync(int? assignedUserId, CancellationToken cancellationToken)
+    {
+        if (!assignedUserId.HasValue)
+        {
+            return;
+        }
+
+        var exists = await _db.Users.AnyAsync(u => u.Id == assignedUserId.Value, cancellationToken);
+        if (!exists)
+        {
+            _logger.LogWarning("Rejected ticket operation: User {AssignedUserId} does not exist", assignedUserId.Value);
+            throw new ArgumentException($"Assigned user with ID {assignedUserId.Value} was not found.");
+        }
     }
 
     private static TicketResponse MapToResponse(Ticket ticket) => new(

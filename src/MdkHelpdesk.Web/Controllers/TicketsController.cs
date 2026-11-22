@@ -44,4 +44,20 @@ public sealed class TicketsController : ControllerBase
         var ticket = await _ticketService.GetByIdAsync(id, cancellationToken);
         return ticket is null ? NotFound() : Ok(ticket);
     }
+
+    /// <summary>
+    /// Creates a new support ticket in the Open state.
+    /// </summary>
+    /// <param name="request">Ticket creation payload.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
+    [HttpPost]
+    [ProducesResponseType(typeof(TicketResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<TicketResponse>> Create(
+        [FromBody] CreateTicketRequest request,
+        CancellationToken cancellationToken)
+    {
+        var created = await _ticketService.CreateAsync(request, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+    }
 }

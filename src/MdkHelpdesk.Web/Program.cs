@@ -4,6 +4,7 @@ using MdkHelpdesk.Application.Interfaces;
 using MdkHelpdesk.Application.Services;
 using MdkHelpdesk.Infrastructure.Data;
 using MdkHelpdesk.Web.Components;
+using MdkHelpdesk.Web.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,11 @@ builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbConte
 
 // Application services (shared by both the Blazor UI and the REST API controllers)
 builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+// Consistent RFC 7807 error responses for the API
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 // REST API & Swagger (enum values are serialized as readable strings; XML doc comments feed Swagger)
 builder.Services.AddControllers()
@@ -60,9 +66,10 @@ app.UseSwaggerUI(options =>
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "MDK Helpdesk API v1");
 });
 
+app.UseExceptionHandler();
+
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
 

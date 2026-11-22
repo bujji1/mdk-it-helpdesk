@@ -29,3 +29,21 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel
 | TC-2.4 | Open `/tickets/9999` | A "Ticket #9999 was not found" message is shown with a link back to the list | `GetByIdAsync_ReturnsNull_WhenTicketDoesNotExist` |
 | TC-2.5 | Call `GET /api/tickets/2` | 200 OK with the ticket as JSON | (integration test, to be added) |
 | TC-2.6 | Call `GET /api/tickets/9999` | 404 Not Found | (integration test, to be added) |
+
+## Story 3: Create a new ticket
+
+> As a helpdesk agent, I can create a new ticket, so that a reported problem is recorded and can be worked on.
+
+| ID | Steps | Expected result | Automated by |
+|---|---|---|---|
+| TC-3.1 | Click "+ New Ticket", enter a title and description, pick an assignee, click "Save Ticket" | The new ticket's detail page opens; status is Open; created and updated times are equal and in UTC | `CreateAsync_SetsOpenStatusAndUtcTimestamps` |
+| TC-3.2 | Create a ticket leaving "Assign To" as "-- Unassigned --" | The ticket is saved and shows "Unassigned" | `CreateAsync_AllowsUnassignedTicket` |
+| TC-3.3 | Click "Save Ticket" with an empty title | "Title is required." is shown; nothing is saved | (visual check) |
+| TC-3.4 | Enter a 2-character title and save | "Title must be between 3 and 150 characters." is shown | (visual check) |
+| TC-3.5 | Click "Save Ticket" with an empty description | "Description is required." is shown | (visual check) |
+| TC-3.6 | Enter a title with leading and trailing spaces and save | The saved title has no surrounding spaces | `CreateAsync_TrimsTitleAndDescription` |
+| TC-3.7 | Click "Cancel" on the form | The list page opens; nothing is saved | (visual check) |
+| TC-3.8 | Call `POST /api/tickets` with a valid body | 201 Created, a `Location` header pointing at the new ticket, and the ticket as JSON | (integration test, to be added) |
+| TC-3.9 | Call `POST /api/tickets` with an empty title | 400 Bad Request listing the validation errors | (integration test, to be added) |
+| TC-3.10 | Call `POST /api/tickets` with `assignedUserId` 9999 | 400 Bad Request, "Assigned user with ID 9999 was not found."; no ticket is created | `CreateAsync_ThrowsArgumentException_WhenAssignedUserDoesNotExist` |
+| TC-3.11 | Call `GET /api/users` | 200 OK with the three users ordered by name | `GetAllAsync_ReturnsSeededUsersOrderedByName` |
