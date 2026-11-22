@@ -108,6 +108,16 @@ dotnet test
 
 ## CI/CD
 
+```mermaid
+flowchart LR
+    Dev["Feature branch"] --> PR["Pull request"]
+    PR --> CI["CI: build, migration check, tests"]
+    CI -->|green| Merge["Merge to main"]
+    Merge --> CD["CD: build, test, publish"]
+    CD --> App["Azure App Service"]
+    App -->|applies migrations on startup| Sql[("Azure SQL")]
+```
+
 - **CI** (`.github/workflows/ci.yml`): on every push and pull request, builds the solution, checks that the EF Core migrations match the model, and runs all tests.
 - **CD** (`.github/workflows/deploy.yml`): on every merge to `main`, builds, tests, publishes and deploys to Azure App Service.
 
