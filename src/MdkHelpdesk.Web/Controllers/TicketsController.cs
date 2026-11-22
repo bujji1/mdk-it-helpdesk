@@ -25,6 +25,7 @@ public sealed class TicketsController : ControllerBase
     /// </summary>
     /// <param name="status">Optional ticket status filter (Open, InProgress, Closed).</param>
     /// <param name="assignedUserId">Optional assigned user ID filter.</param>
+    /// <param name="unassigned">Set to true to list only tickets with no assignee. Cannot be combined with assignedUserId.</param>
     /// <param name="cancellationToken">Request cancellation token.</param>
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<TicketResponse>), StatusCodes.Status200OK)]
@@ -32,9 +33,10 @@ public sealed class TicketsController : ControllerBase
     public async Task<ActionResult<IReadOnlyList<TicketResponse>>> GetAll(
         [FromQuery] TicketStatus? status,
         [FromQuery] int? assignedUserId,
-        CancellationToken cancellationToken)
+        [FromQuery] bool unassigned = false,
+        CancellationToken cancellationToken = default)
     {
-        var tickets = await _ticketService.GetTicketsAsync(status, assignedUserId, cancellationToken);
+        var tickets = await _ticketService.GetTicketsAsync(status, assignedUserId, unassigned, cancellationToken);
         return Ok(tickets);
     }
 
