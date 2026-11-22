@@ -35,4 +35,13 @@ public sealed class SiteSmokeTests : IClassFixture<CustomWebApplicationFactory>
         var json = await response.Content.ReadAsStringAsync();
         Assert.Contains("/api/Tickets/{id}/assign", json);
     }
+
+    [Fact]
+    public async Task HealthEndpoint_ReportsHealthy_WhenTheDatabaseIsReachable()
+    {
+        var response = await _client.GetAsync("/health");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("Healthy", await response.Content.ReadAsStringAsync());
+    }
 }
