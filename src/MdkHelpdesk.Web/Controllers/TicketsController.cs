@@ -60,4 +60,23 @@ public sealed class TicketsController : ControllerBase
         var created = await _ticketService.CreateAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
+
+    /// <summary>
+    /// Updates an existing support ticket's title, description and status.
+    /// </summary>
+    /// <param name="id">Ticket ID.</param>
+    /// <param name="request">Updated ticket payload.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
+    [HttpPut("{id:int}")]
+    [ProducesResponseType(typeof(TicketResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<TicketResponse>> Update(
+        int id,
+        [FromBody] UpdateTicketRequest request,
+        CancellationToken cancellationToken)
+    {
+        var updated = await _ticketService.UpdateAsync(id, request, cancellationToken);
+        return updated is null ? NotFound() : Ok(updated);
+    }
 }

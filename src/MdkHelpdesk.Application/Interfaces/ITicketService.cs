@@ -22,4 +22,9 @@ public interface ITicketService
     /// </summary>
     /// <exception cref="ArgumentException">The assigned user does not exist.</exception>
     Task<TicketResponse> CreateAsync(CreateTicketRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates a ticket's title, description and status. Returns null when the ticket does not exist.
+    /// </summary>
+    Task<TicketResponse?> UpdateAsync(int id, UpdateTicketRequest request, CancellationToken cancellationToken = default);
 }

@@ -19,7 +19,10 @@ else
 {
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h2 mb-0">Ticket #@_ticket.Id: @_ticket.Title</h1>
-        <a class="btn btn-outline-secondary" href="/">Back to List</a>
+        <div>
+            <a class="btn btn-primary me-2" href="/tickets/@_ticket.Id/edit">Edit</a>
+            <a class="btn btn-outline-secondary" href="/">Back to List</a>
+        </div>
     </div>
 
     <div class="card">

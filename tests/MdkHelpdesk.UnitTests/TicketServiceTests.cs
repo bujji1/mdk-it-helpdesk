@@ -161,6 +161,55 @@ public sealed class TicketServiceTests : IDisposable
         Assert.Equal(3, await _db.Tickets.CountAsync());
     }
 
+    [Fact]
+    public async Task UpdateAsync_ChangesDetailsAndStatus_AndAdvancesUpdatedAtOnly()
+    {
+        var original = await _sut.GetByIdAsync(1);
+        Assert.NotNull(original);
+
+        var updated = await _sut.UpdateAsync(1, new UpdateTicketRequest
+        {
+            Title = "  VPN drops every 15 minutes  ",
+            Description = "Confirmed on two laptops.",
+            Status = TicketStatus.InProgress
+        });
+
+        Assert.NotNull(updated);
+        Assert.Equal("VPN drops every 15 minutes", updated.Title);
+        Assert.Equal("Confirmed on two laptops.", updated.Description);
+        Assert.Equal(TicketStatus.InProgress, updated.Status);
+        Assert.Equal(original.CreatedAt, updated.CreatedAt);
+        Assert.True(updated.UpdatedAt > original.UpdatedAt);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_KeepsExistingAssignee()
+    {
+        var updated = await _sut.UpdateAsync(2, new UpdateTicketRequest
+        {
+            Title = "Request Outlook shared mailbox access",
+            Description = "Access granted; waiting for confirmation.",
+            Status = TicketStatus.Closed
+        });
+
+        Assert.NotNull(updated);
+        Assert.Equal(2, updated.AssignedUserId);
+        Assert.Equal("Bob Martinez", updated.AssignedUserName);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ReturnsNull_WhenTicketDoesNotExist()
+    {
+        var updated = await _sut.UpdateAsync(9999, new UpdateTicketRequest
+        {
+            Title = "Does not exist",
+            Description = "Nothing to update.",
+            Status = TicketStatus.Open
+        });
+
+        Assert.Null(updated);
+    }
+
     public void Dispose()
     {
         _db.Dispose();
