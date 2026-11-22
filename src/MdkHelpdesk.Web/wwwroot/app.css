@@ -1,23 +1,138 @@
+/* Theme: navy and blue palette, applied through a few variables so it is easy to change. */
+:root {
+    --brand-navy: #14284b;
+    --brand-blue: #2f6db5;
+    --brand-blue-dark: #255a98;
+    --page-bg: #f4f6f9;
+    --border-soft: #e2e8f0;
+    --text-muted: #5b6b82;
+}
+
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--page-bg);
+    color: #1f2937;
+}
+
+h1, h2 {
+    color: var(--brand-navy);
+    font-weight: 600;
 }
 
 a, .btn-link {
-    color: #006bb7;
+    color: var(--brand-blue-dark);
 }
 
 .btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    --bs-btn-bg: var(--brand-blue);
+    --bs-btn-border-color: var(--brand-blue);
+    --bs-btn-hover-bg: var(--brand-blue-dark);
+    --bs-btn-hover-border-color: var(--brand-blue-dark);
+    --bs-btn-active-bg: var(--brand-navy);
+    --bs-btn-active-border-color: var(--brand-navy);
+    --bs-btn-disabled-bg: var(--brand-blue);
+    --bs-btn-disabled-border-color: var(--brand-blue);
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.btn-outline-primary {
+    --bs-btn-color: var(--brand-blue-dark);
+    --bs-btn-border-color: var(--brand-blue);
+    --bs-btn-hover-bg: var(--brand-blue);
+    --bs-btn-hover-border-color: var(--brand-blue);
+    --bs-btn-active-bg: var(--brand-blue-dark);
+    --bs-btn-active-border-color: var(--brand-blue-dark);
+    --bs-btn-disabled-color: var(--text-muted);
+    --bs-btn-disabled-border-color: var(--border-soft);
 }
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-select:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #6ea3de;
+}
+
+.card {
+    border: 1px solid var(--border-soft);
+    border-radius: 0.6rem;
+    box-shadow: 0 1px 2px rgba(20, 40, 75, 0.06);
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--brand-navy);
+}
+
+/* Ticket table */
+.ticket-table {
+    margin-bottom: 0;
+}
+
+    .ticket-table thead th {
+        background-color: #f8fafc;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+    .ticket-table td, .ticket-table th {
+        padding: 0.75rem 1rem;
+    }
+
+    .ticket-table .ticket-id, .ticket-table .ticket-date {
+        color: var(--text-muted);
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+    }
+
+/* Status badges: tinted pills with dark text, readable without relying on colour alone */
+.badge.status-open, .badge.status-progress, .badge.status-closed {
+    border-radius: 999px;
+    padding: 0.4em 0.75em;
+    font-weight: 600;
+}
+
+.badge.status-open {
+    background-color: #e1edfb;
+    color: #1d4f91;
+}
+
+.badge.status-progress {
+    background-color: #fff1cf;
+    color: #7a4f00;
+}
+
+.badge.status-closed {
+    background-color: #dcf3e4;
+    color: #1c6b3c;
+}
+
+/* Label/value pairs on the ticket detail page */
+.detail-grid {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 0;
+}
+
+    .detail-grid dt {
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .detail-grid dd {
+        margin-bottom: 0;
+    }
 
 .content {
-    padding-top: 1.1rem;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+    max-width: 1200px;
 }
 
 h1:focus {
