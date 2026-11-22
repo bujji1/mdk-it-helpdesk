@@ -339,6 +339,21 @@ public sealed class TicketServiceTests : IDisposable
             _sut.GetTicketsAsync(assignedUserId: 1, unassignedOnly: true));
     }
 
+    [Fact]
+    public async Task UpdateAsync_AllowsReopeningAClosedTicket()
+    {
+        // Ticket 3 is seeded as Closed. Any status transition is allowed in this MVP.
+        var reopened = await _sut.UpdateAsync(3, new UpdateTicketRequest
+        {
+            Title = "Conference room projector HDMI issue",
+            Description = "The problem came back after the cable was replaced.",
+            Status = TicketStatus.Open
+        });
+
+        Assert.NotNull(reopened);
+        Assert.Equal(TicketStatus.Open, reopened.Status);
+    }
+
     public void Dispose()
     {
         _db.Dispose();

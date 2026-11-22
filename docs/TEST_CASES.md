@@ -63,6 +63,7 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez, Priya Patel an
 | TC-4.7 | Call `PUT /api/tickets/1` with a valid body | 200 OK with the updated ticket | `UpdateTicket_ChangesStatus_AndAdvancesUpdatedAtOnly` |
 | TC-4.8 | Call `PUT /api/tickets/1` with `"status": "Done"` | 400 Bad Request | `UpdateTicket_Returns400_WhenStatusIsNotAKnownValue` |
 | TC-4.9 | Call `PUT /api/tickets/9999` with a valid body | 404 Not Found | `UpdateTicket_Returns404_WhenTicketDoesNotExist` |
+| TC-4.10 | Edit a Closed ticket and set its status back to Open | The ticket is saved as Open: any status transition is allowed | `UpdateAsync_AllowsReopeningAClosedTicket` |
 
 ## Story 5: Assign a ticket to a user
 

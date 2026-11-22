@@ -89,9 +89,10 @@ Errors are returned as RFC 7807 `ProblemDetails`. Status values are `Open`, `InP
 
 ### Assumptions and scope
 
-- A ticket may be unassigned (for triage), so `AssignedUserId` is nullable.
+- A ticket may be created unassigned (for triage) and assigned or reassigned afterwards, so `AssignedUserId` is nullable.
+- Any transition between Open, In Progress and Closed is allowed, including reopening a closed ticket. An MVP should stay flexible; a fixed workflow belongs in `TicketService.UpdateAsync` once the team has agreed one.
 - Deleting a user would unassign their tickets rather than delete them.
-- Users are seeded reference data; managing users is out of scope.
+- The brief is about ticket workflows and assignment, so helpdesk users are seeded through EF Core migrations rather than managed through user-administration screens.
 - Authentication and authorization are out of scope for this MVP. In production I would put the app behind Microsoft Entra ID and restrict the API.
 - Deleting tickets is not in the requirements; closing a ticket is the intended end state.
 - No paging on the list: fine for a small team's ticket volume, and the first thing I would add as it grows.
