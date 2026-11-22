@@ -6,6 +6,7 @@ A small internal tool for an IT helpdesk team to manage support tickets. Built w
 |---|---|
 | **Live site** | https://mdk-it-helpdesk-kiran-htafg9b0hwc5cqa4.westus3-01.azurewebsites.net |
 | **API docs (Swagger)** | https://mdk-it-helpdesk-kiran-htafg9b0hwc5cqa4.westus3-01.azurewebsites.net/swagger |
+| **Health check** | https://mdk-it-helpdesk-kiran-htafg9b0hwc5cqa4.westus3-01.azurewebsites.net/health |
 
 > The live site runs on free and serverless Azure tiers that sleep when idle. The first request after a quiet period can take up to a minute while the app and the database wake up; after that it responds normally.
 
@@ -70,6 +71,7 @@ The Blazor pages and the REST controllers both call the same application service
 | PUT | `/api/tickets/{id}` | Update title, description and status | 200, 400, 404 |
 | PATCH | `/api/tickets/{id}/assign` | Assign to a user, or unassign with `null` | 200, 400, 404 |
 | GET | `/api/users` | List users available for assignment | 200 |
+| GET | `/health` | Health check, including database connectivity | 200, 503 |
 
 Errors are returned as RFC 7807 `ProblemDetails`. Status values are `Open`, `InProgress` and `Closed`.
 

@@ -29,6 +29,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
+// Health check that also verifies the database is reachable (used for monitoring)
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<AppDbContext>("database");
+
 // REST API & Swagger (enum values are serialized as readable strings; XML doc comments feed Swagger)
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -77,6 +81,7 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
+app.MapHealthChecks("/health");
 app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
