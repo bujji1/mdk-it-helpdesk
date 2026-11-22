@@ -1,9 +1,11 @@
+using MdkHelpdesk.Application.DTOs;
 using MdkHelpdesk.Application.Services;
 using MdkHelpdesk.Domain.Entities;
 using MdkHelpdesk.Domain.Enums;
 using MdkHelpdesk.Infrastructure.Data;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MdkHelpdesk.UnitTests;
 
@@ -29,7 +31,7 @@ public sealed class TicketServiceTests : IDisposable
         _db = new AppDbContext(options);
         _db.Database.EnsureCreated();
 
-        _sut = new TicketService(_db);
+        _sut = new TicketService(_db, NullLogger<TicketService>.Instance);
     }
 
     [Fact]
@@ -97,6 +99,66 @@ public sealed class TicketServiceTests : IDisposable
         var ticket = await _sut.GetByIdAsync(9999);
 
         Assert.Null(ticket);
+    }
+
+    [Fact]
+    public async Task CreateAsync_SetsOpenStatusAndUtcTimestamps()
+    {
+        var before = DateTime.UtcNow.AddSeconds(-1);
+
+        var created = await _sut.CreateAsync(new CreateTicketRequest
+        {
+            Title = "Printer jam on 2nd floor",
+            Description = "Paper tray 2 is jammed.",
+            AssignedUserId = 1
+        });
+
+        Assert.True(created.Id > 0);
+        Assert.Equal(TicketStatus.Open, created.Status);
+        Assert.Equal("Alice Johnson", created.AssignedUserName);
+        Assert.True(created.CreatedAt >= before);
+        Assert.Equal(created.CreatedAt, created.UpdatedAt);
+    }
+
+    [Fact]
+    public async Task CreateAsync_AllowsUnassignedTicket()
+    {
+        var created = await _sut.CreateAsync(new CreateTicketRequest
+        {
+            Title = "New starter needs a laptop",
+            Description = "Starts on Monday; no assignee yet."
+        });
+
+        Assert.Null(created.AssignedUserId);
+        Assert.Null(created.AssignedUserName);
+    }
+
+    [Fact]
+    public async Task CreateAsync_TrimsTitleAndDescription()
+    {
+        var created = await _sut.CreateAsync(new CreateTicketRequest
+        {
+            Title = "  Monitor flickers  ",
+            Description = "  Happens after waking from sleep.  "
+        });
+
+        Assert.Equal("Monitor flickers", created.Title);
+        Assert.Equal("Happens after waking from sleep.", created.Description);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ThrowsArgumentException_WhenAssignedUserDoesNotExist()
+    {
+        var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
+            _sut.CreateAsync(new CreateTicketRequest
+            {
+                Title = "Invalid assignee test",
+                Description = "Should fail validation.",
+                AssignedUserId = 9999
+            }));
+
+        Assert.Contains("9999", ex.Message);
+        Assert.Equal(3, await _db.Tickets.CountAsync());
     }
 
     public void Dispose()

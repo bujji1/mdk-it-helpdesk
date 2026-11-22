@@ -1,0 +1,81 @@
+@page "/tickets/new"
+@rendermode InteractiveServer
+@using MdkHelpdesk.Application.DTOs
+@using MdkHelpdesk.Application.Interfaces
+@inject ITicketService TicketService
+@inject IUserService UserService
+@inject NavigationManager Navigation
+
+<PageTitle>New Ticket - MDK IT Helpdesk</PageTitle>
+
+<h1 class="h2">Create Support Ticket</h1>
+
+@if (!string.IsNullOrWhiteSpace(_errorMessage))
+{
+    <div class="alert alert-danger">@_errorMessage</div>
+}
+
+<EditForm Model="_model" OnValidSubmit="HandleSubmitAsync" FormName="TicketForm">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label class="form-label" for="title">Title</label>
+        <InputText id="title" class="form-control" @bind-Value="_model.Title" placeholder="Short summary of the issue" />
+        <ValidationMessage For="@(() => _model.Title)" class="text-danger" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="description">Description</label>
+        <InputTextArea id="description" class="form-control" rows="4" @bind-Value="_model.Description" placeholder="Detailed steps or context" />
+        <ValidationMessage For="@(() => _model.Description)" class="text-danger" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="assignee">Assign To</label>
+        <InputSelect id="assignee" class="form-select" @bind-Value="_model.AssignedUserId">
+            <option value="">-- Unassigned --</option>
+            @foreach (var user in _users)
+            {
+                <option value="@user.Id">@user.Name (@user.Email)</option>
+            }
+        </InputSelect>
+    </div>
+
+    <button type="submit" class="btn btn-primary me-2" disabled="@_isSaving">
+        @(_isSaving ? "Saving..." : "Save Ticket")
+    </button>
+    <a class="btn btn-outline-secondary" href="/">Cancel</a>
+</EditForm>
+
+@code {
+    private readonly CreateTicketRequest _model = new();
+    private IReadOnlyList<UserResponse> _users = Array.Empty<UserResponse>();
+    private bool _isSaving;
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _users = await UserService.GetAllAsync();
+    }
+
+    private async Task HandleSubmitAsync()
+    {
+        _isSaving = true;
+        _errorMessage = null;
+
+        try
+        {
+            var created = await TicketService.CreateAsync(_model);
+            Navigation.NavigateTo($"/tickets/{created.Id}");
+        }
+        catch (ArgumentException ex)
+        {
+            // Business-rule violations carry a safe, user-facing message.
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+}
