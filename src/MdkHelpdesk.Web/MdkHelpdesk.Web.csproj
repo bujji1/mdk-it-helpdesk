@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\MdkHelpdesk.Application\MdkHelpdesk.Application.csproj" />
+    <ProjectReference Include="..\MdkHelpdesk.Infrastructure\MdkHelpdesk.Infrastructure.csproj" />
+    <ProjectReference Include="..\MdkHelpdesk.Domain\MdkHelpdesk.Domain.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>

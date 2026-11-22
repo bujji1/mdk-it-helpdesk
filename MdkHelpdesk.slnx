@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MdkHelpdesk.Application/MdkHelpdesk.Application.csproj" />
+    <Project Path="src/MdkHelpdesk.Domain/MdkHelpdesk.Domain.csproj" />
+    <Project Path="src/MdkHelpdesk.Infrastructure/MdkHelpdesk.Infrastructure.csproj" />
+    <Project Path="src/MdkHelpdesk.Web/MdkHelpdesk.Web.csproj" />
+  </Folder>
+</Solution>
