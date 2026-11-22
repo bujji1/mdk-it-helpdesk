@@ -30,4 +30,18 @@ public sealed class TicketsController : ControllerBase
         var tickets = await _ticketService.GetTicketsAsync(cancellationToken);
         return Ok(tickets);
     }
+
+    /// <summary>
+    /// Retrieves a single support ticket by its unique ID.
+    /// </summary>
+    /// <param name="id">Ticket ID.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(TicketResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<TicketResponse>> GetById(int id, CancellationToken cancellationToken)
+    {
+        var ticket = await _ticketService.GetByIdAsync(id, cancellationToken);
+        return ticket is null ? NotFound() : Ok(ticket);
+    }
 }

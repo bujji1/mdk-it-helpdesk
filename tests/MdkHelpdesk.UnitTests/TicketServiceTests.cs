@@ -78,6 +78,27 @@ public sealed class TicketServiceTests : IDisposable
         Assert.Null(unassigned.AssignedUserName);
     }
 
+    [Fact]
+    public async Task GetByIdAsync_ReturnsTicketWithAssigneeAndTimestamps()
+    {
+        var ticket = await _sut.GetByIdAsync(2);
+
+        Assert.NotNull(ticket);
+        Assert.Equal("Request Outlook shared mailbox access", ticket.Title);
+        Assert.Equal(TicketStatus.InProgress, ticket.Status);
+        Assert.Equal("Bob Martinez", ticket.AssignedUserName);
+        Assert.NotEqual(default, ticket.CreatedAt);
+        Assert.NotEqual(default, ticket.UpdatedAt);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_ReturnsNull_WhenTicketDoesNotExist()
+    {
+        var ticket = await _sut.GetByIdAsync(9999);
+
+        Assert.Null(ticket);
+    }
+
     public void Dispose()
     {
         _db.Dispose();

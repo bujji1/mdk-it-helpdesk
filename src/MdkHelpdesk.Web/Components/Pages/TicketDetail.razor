@@ -1,0 +1,54 @@
+@page "/tickets/{Id:int}"
+@rendermode InteractiveServer
+@using MdkHelpdesk.Application.DTOs
+@using MdkHelpdesk.Application.Interfaces
+@inject ITicketService TicketService
+
+<PageTitle>Ticket #@Id - MDK IT Helpdesk</PageTitle>
+
+@if (_isLoading)
+{
+    <p><em>Loading ticket...</em></p>
+}
+else if (_ticket is null)
+{
+    <div class="alert alert-warning">Ticket #@Id was not found.</div>
+    <a class="btn btn-secondary" href="/">Back to Tickets</a>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h2 mb-0">Ticket #@_ticket.Id: @_ticket.Title</h1>
+        <a class="btn btn-outline-secondary" href="/">Back to List</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <p class="mb-2">
+                <strong>Status:</strong>
+                <span class="badge @TicketStatusDisplay.BadgeClass(_ticket.Status)">@TicketStatusDisplay.Label(_ticket.Status)</span>
+            </p>
+            <p class="mb-2"><strong>Assigned To:</strong> @(_ticket.AssignedUserName ?? "Unassigned")</p>
+            <p class="mb-2"><strong>Created (UTC):</strong> @_ticket.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+            <p class="mb-3"><strong>Last Updated (UTC):</strong> @_ticket.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+            <hr />
+            <h2 class="h5">Description</h2>
+            <p class="mb-0" style="white-space: pre-wrap;">@_ticket.Description</p>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private TicketResponse? _ticket;
+    private bool _isLoading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isLoading = true;
+        _ticket = await TicketService.GetByIdAsync(Id);
+        _isLoading = false;
+    }
+}
