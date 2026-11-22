@@ -1,6 +1,6 @@
 # Acceptance Test Cases
 
-Manual test cases, grouped by user story. Each story also has automated tests; the last column of each table names them.
+Manual test cases, grouped by user story. The last column names the automated test that covers each case: unit tests live in `tests/MdkHelpdesk.UnitTests`, integration tests (full HTTP pipeline) in `tests/MdkHelpdesk.IntegrationTests`. Cases marked "(visual check)" are verified by hand in the browser.
 
 Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel; tickets #1 (Open, Alice), #2 (In Progress, Bob) and #3 (Closed, Priya).
 
@@ -10,12 +10,12 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel
 
 | ID | Steps | Expected result | Automated by |
 |---|---|---|---|
-| TC-1.1 | Open the home page `/` | A table lists the three seeded tickets with ID, title, status, assignee, created and updated times | `GetTicketsAsync_ReturnsSeededTicketsWithAssigneeNames` |
+| TC-1.1 | Open the home page `/` | A table lists the three seeded tickets with ID, title, status, assignee, created and updated times | `GetTicketsAsync_ReturnsSeededTicketsWithAssigneeNames`, `HomePage_RendersTheTicketList` |
 | TC-1.2 | Look at the Status column | Open, In Progress and Closed are shown as distinct coloured badges | (visual check) |
 | TC-1.3 | Look at the order of the rows | The most recently updated ticket is first | `GetTicketsAsync_ReturnsMostRecentlyUpdatedFirst` |
 | TC-1.4 | View a ticket that has no assignee | The Assigned To column shows "Unassigned" | `GetTicketsAsync_ReturnsNullAssigneeName_WhenTicketIsUnassigned` |
-| TC-1.5 | Call `GET /api/tickets` (from `/swagger`) | 200 OK with a JSON array; `status` is a readable string such as `"InProgress"`; timestamps are UTC | (integration test, to be added) |
-| TC-1.6 | Open `/swagger` | Swagger UI loads and lists `GET /api/tickets` with its description | (visual check) |
+| TC-1.5 | Call `GET /api/tickets` (from `/swagger`) | 200 OK with a JSON array; `status` is a readable string such as `"InProgress"`; timestamps are UTC | `GetTickets_ReturnsSeededTickets_WithStatusAsReadableString` |
+| TC-1.6 | Open `/swagger` | Swagger UI loads and lists `GET /api/tickets` with its description | `SwaggerDocument_DescribesTheTicketEndpoints` |
 
 ## Story 2: Open a ticket to see its details
 
@@ -27,8 +27,8 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel
 | TC-2.2 | View the detail page for ticket #2 | Title, description, status "In Progress", assignee "Bob Martinez", created and last-updated times (UTC) are shown | `GetByIdAsync_ReturnsTicketWithAssigneeAndTimestamps` |
 | TC-2.3 | Click "Back to List" | The list page opens | (visual check) |
 | TC-2.4 | Open `/tickets/9999` | A "Ticket #9999 was not found" message is shown with a link back to the list | `GetByIdAsync_ReturnsNull_WhenTicketDoesNotExist` |
-| TC-2.5 | Call `GET /api/tickets/2` | 200 OK with the ticket as JSON | (integration test, to be added) |
-| TC-2.6 | Call `GET /api/tickets/9999` | 404 Not Found | (integration test, to be added) |
+| TC-2.5 | Call `GET /api/tickets/2` | 200 OK with the ticket as JSON | `GetTicket_ReturnsTicket_WhenItExists` |
+| TC-2.6 | Call `GET /api/tickets/9999` | 404 Not Found | `GetTicket_Returns404_WhenItDoesNotExist` |
 
 ## Story 3: Create a new ticket
 
@@ -43,9 +43,9 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel
 | TC-3.5 | Click "Save Ticket" with an empty description | "Description is required." is shown | (visual check) |
 | TC-3.6 | Enter a title with leading and trailing spaces and save | The saved title has no surrounding spaces | `CreateAsync_TrimsTitleAndDescription` |
 | TC-3.7 | Click "Cancel" on the form | The list page opens; nothing is saved | (visual check) |
-| TC-3.8 | Call `POST /api/tickets` with a valid body | 201 Created, a `Location` header pointing at the new ticket, and the ticket as JSON | (integration test, to be added) |
-| TC-3.9 | Call `POST /api/tickets` with an empty title | 400 Bad Request listing the validation errors | (integration test, to be added) |
-| TC-3.10 | Call `POST /api/tickets` with `assignedUserId` 9999 | 400 Bad Request, "Assigned user with ID 9999 was not found."; no ticket is created | `CreateAsync_ThrowsArgumentException_WhenAssignedUserDoesNotExist` |
+| TC-3.8 | Call `POST /api/tickets` with a valid body | 201 Created, a `Location` header pointing at the new ticket, and the ticket as JSON | `CreateTicket_Returns201WithLocation_AndTicketCanBeFetched` |
+| TC-3.9 | Call `POST /api/tickets` with an empty title | 400 Bad Request listing the validation errors | `CreateTicket_Returns400WithFieldErrors_WhenTitleIsEmpty` |
+| TC-3.10 | Call `POST /api/tickets` with `assignedUserId` 9999 | 400 Bad Request, "Assigned user with ID 9999 was not found."; no ticket is created | `CreateAsync_ThrowsArgumentException_WhenAssignedUserDoesNotExist`, `CreateTicket_Returns400ProblemDetails_WhenAssigneeDoesNotExist` |
 | TC-3.11 | Call `GET /api/users` | 200 OK with the three users ordered by name | `GetAllAsync_ReturnsSeededUsersOrderedByName` |
 
 ## Story 4: Update a ticket's details and status
@@ -60,9 +60,9 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel
 | TC-4.4 | Clear the title and save | "Title is required." is shown; nothing is saved | (visual check) |
 | TC-4.5 | Click "Cancel" on the edit form | The detail page opens; nothing is changed | (visual check) |
 | TC-4.6 | Open `/tickets/9999/edit` | "Ticket #9999 was not found" is shown | `UpdateAsync_ReturnsNull_WhenTicketDoesNotExist` |
-| TC-4.7 | Call `PUT /api/tickets/1` with a valid body | 200 OK with the updated ticket | (integration test, to be added) |
-| TC-4.8 | Call `PUT /api/tickets/1` with `"status": "Done"` | 400 Bad Request | (integration test, to be added) |
-| TC-4.9 | Call `PUT /api/tickets/9999` with a valid body | 404 Not Found | (integration test, to be added) |
+| TC-4.7 | Call `PUT /api/tickets/1` with a valid body | 200 OK with the updated ticket | `UpdateTicket_ChangesStatus_AndAdvancesUpdatedAtOnly` |
+| TC-4.8 | Call `PUT /api/tickets/1` with `"status": "Done"` | 400 Bad Request | `UpdateTicket_Returns400_WhenStatusIsNotAKnownValue` |
+| TC-4.9 | Call `PUT /api/tickets/9999` with a valid body | 404 Not Found | `UpdateTicket_Returns404_WhenTicketDoesNotExist` |
 
 ## Story 5: Assign a ticket to a user
 
@@ -74,9 +74,9 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel
 | TC-5.2 | Pick "-- Unassigned --" and click "Update Assignee" | "Assigned To" shows "Unassigned" | `AssignAsync_WithNull_UnassignsTicket` |
 | TC-5.3 | Open a ticket without changing the dropdown | "Update Assignee" is disabled until a different user is picked | (visual check) |
 | TC-5.4 | Go back to the list after assigning | The list shows the new assignee | (visual check) |
-| TC-5.5 | Call `PATCH /api/tickets/1/assign` with `{"assignedUserId": 2}` | 200 OK with the ticket assigned to Bob Martinez | (integration test, to be added) |
-| TC-5.6 | Call `PATCH /api/tickets/1/assign` with `{"assignedUserId": 9999}` | 400 Bad Request; the previous assignee is kept | `AssignAsync_ThrowsArgumentException_AndKeepsAssignee_WhenUserDoesNotExist` |
-| TC-5.7 | Call `PATCH /api/tickets/9999/assign` | 404 Not Found | `AssignAsync_ReturnsNull_WhenTicketDoesNotExist` |
+| TC-5.5 | Call `PATCH /api/tickets/1/assign` with `{"assignedUserId": 2}` | 200 OK with the ticket assigned to Bob Martinez | `AssignTicket_AssignsThenUnassigns` |
+| TC-5.6 | Call `PATCH /api/tickets/1/assign` with `{"assignedUserId": 9999}` | 400 Bad Request; the previous assignee is kept | `AssignAsync_ThrowsArgumentException_AndKeepsAssignee_WhenUserDoesNotExist`, `AssignTicket_Returns400_WhenUserDoesNotExist` |
+| TC-5.7 | Call `PATCH /api/tickets/9999/assign` | 404 Not Found | `AssignAsync_ReturnsNull_WhenTicketDoesNotExist`, `AssignTicket_Returns404_WhenTicketDoesNotExist` |
 
 ## Story 6: Filter tickets by status or assigned user
 
@@ -89,5 +89,5 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel
 | TC-6.3 | Choose both a status and a user | Only tickets matching both are listed | `GetTicketsAsync_CombinesStatusAndUserFilters` |
 | TC-6.4 | Choose a combination that matches nothing | "No tickets match the selected filters." is shown | `GetTicketsAsync_ReturnsEmpty_WhenNoTicketMatches` |
 | TC-6.5 | Click "Clear Filters" | Both dropdowns reset and all tickets are listed; the button is disabled when no filter is set | (visual check) |
-| TC-6.6 | Call `GET /api/tickets?status=Open&assignedUserId=1` | 200 OK with only Alice's open tickets | (integration test, to be added) |
-| TC-6.7 | Call `GET /api/tickets?status=Done` | 400 Bad Request | (integration test, to be added) |
+| TC-6.6 | Call `GET /api/tickets?status=Open&assignedUserId=1` | 200 OK with only Alice's open tickets | `GetTickets_FiltersByStatusAndAssignedUser` |
+| TC-6.7 | Call `GET /api/tickets?status=Done` | 400 Bad Request | `GetTickets_Returns400_WhenStatusFilterIsNotAKnownValue` |
