@@ -82,3 +82,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+
+// Exposed so WebApplicationFactory<Program> in the integration tests can boot the app.
+public partial class Program { }

@@ -6,6 +6,7 @@
     <Project Path="src/MdkHelpdesk.Web/MdkHelpdesk.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/MdkHelpdesk.IntegrationTests/MdkHelpdesk.IntegrationTests.csproj" />
     <Project Path="tests/MdkHelpdesk.UnitTests/MdkHelpdesk.UnitTests.csproj" />
   </Folder>
 </Solution>
