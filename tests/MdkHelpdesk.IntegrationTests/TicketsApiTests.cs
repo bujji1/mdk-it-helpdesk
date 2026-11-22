@@ -239,7 +239,7 @@ public sealed class TicketsApiTests : IClassFixture<CustomWebApplicationFactory>
 
         Assert.NotNull(users);
         Assert.Equal(
-            new[] { "Alice Johnson", "Bob Martinez", "Priya Patel" },
+            new[] { "Alice Johnson", "Bob Martinez", "Daniel Kim", "Priya Patel" },
             users.Select(u => u.Name));
     }
 

@@ -29,9 +29,11 @@ public sealed class AppDbContext : DbContext, IAppDbContext
             entity.HasIndex(u => u.Email).IsUnique();
 
             entity.HasData(
-                new User { Id = 1, Name = "Alice Johnson", Email = "alice.johnson@mdklegal.com" },
-                new User { Id = 2, Name = "Bob Martinez", Email = "bob.martinez@mdklegal.com" },
-                new User { Id = 3, Name = "Priya Patel", Email = "priya.patel@mdklegal.com" }
+                new User { Id = 1, Name = "Alice Johnson", Email = "alice.johnson@example.com" },
+                new User { Id = 2, Name = "Bob Martinez", Email = "bob.martinez@example.com" },
+                new User { Id = 3, Name = "Priya Patel", Email = "priya.patel@example.com" },
+                // Deliberately has no tickets, so the "no results" filter state is easy to see.
+                new User { Id = 4, Name = "Daniel Kim", Email = "daniel.kim@example.com" }
             );
         });
 
@@ -56,6 +58,7 @@ public sealed class AppDbContext : DbContext, IAppDbContext
                 .OnDelete(DeleteBehavior.SetNull);
 
             var seedTime = new DateTime(2026, 11, 1, 12, 0, 0, DateTimeKind.Utc);
+            var unassignedSeedTime = new DateTime(2026, 11, 2, 9, 30, 0, DateTimeKind.Utc);
             entity.HasData(
                 new Ticket
                 {
@@ -71,7 +74,7 @@ public sealed class AppDbContext : DbContext, IAppDbContext
                 {
                     Id = 2,
                     Title = "Request Outlook shared mailbox access",
-                    Description = "Grant read/send-as permissions for legal-intake@mdklegal.com.",
+                    Description = "Grant read/send-as permissions for legal-intake@example.com.",
                     Status = TicketStatus.InProgress,
                     AssignedUserId = 2,
                     CreatedAt = seedTime,
@@ -86,6 +89,17 @@ public sealed class AppDbContext : DbContext, IAppDbContext
                     AssignedUserId = 3,
                     CreatedAt = seedTime,
                     UpdatedAt = seedTime
+                },
+                // Deliberately unassigned, to show a ticket waiting for triage.
+                new Ticket
+                {
+                    Id = 4,
+                    Title = "New starter needs laptop and accounts",
+                    Description = "New hire starts Monday; needs a laptop, an email account and VPN access set up.",
+                    Status = TicketStatus.Open,
+                    AssignedUserId = null,
+                    CreatedAt = unassignedSeedTime,
+                    UpdatedAt = unassignedSeedTime
                 }
             );
         });
