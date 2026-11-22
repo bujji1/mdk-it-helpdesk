@@ -1,0 +1,100 @@
+@page "/tickets/{Id:int}/edit"
+@rendermode InteractiveServer
+@using MdkHelpdesk.Application.DTOs
+@using MdkHelpdesk.Application.Interfaces
+@using MdkHelpdesk.Domain.Enums
+@inject ITicketService TicketService
+@inject NavigationManager Navigation
+
+<PageTitle>Edit Ticket #@Id - MDK IT Helpdesk</PageTitle>
+
+@if (_isLoading)
+{
+    <p><em>Loading ticket...</em></p>
+}
+else if (_notFound)
+{
+    <div class="alert alert-warning">Ticket #@Id was not found.</div>
+    <a class="btn btn-secondary" href="/">Back to Tickets</a>
+}
+else
+{
+    <h1 class="h2">Edit Ticket #@Id</h1>
+
+    <EditForm Model="_model" OnValidSubmit="HandleSubmitAsync" FormName="TicketEditForm">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label class="form-label" for="title">Title</label>
+            <InputText id="title" class="form-control" @bind-Value="_model.Title" />
+            <ValidationMessage For="@(() => _model.Title)" class="text-danger" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="description">Description</label>
+            <InputTextArea id="description" class="form-control" rows="4" @bind-Value="_model.Description" />
+            <ValidationMessage For="@(() => _model.Description)" class="text-danger" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="status">Status</label>
+            <InputSelect id="status" class="form-select" @bind-Value="_model.Status">
+                @foreach (var status in Enum.GetValues<TicketStatus>())
+                {
+                    <option value="@status">@TicketStatusDisplay.Label(status)</option>
+                }
+            </InputSelect>
+        </div>
+
+        <button type="submit" class="btn btn-primary me-2" disabled="@_isSaving">
+            @(_isSaving ? "Saving..." : "Save Changes")
+        </button>
+        <a class="btn btn-outline-secondary" href="/tickets/@Id">Cancel</a>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private UpdateTicketRequest _model = new();
+    private bool _isLoading = true;
+    private bool _notFound;
+    private bool _isSaving;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var existing = await TicketService.GetByIdAsync(Id);
+        if (existing is null)
+        {
+            _notFound = true;
+        }
+        else
+        {
+            _model = new UpdateTicketRequest
+            {
+                Title = existing.Title,
+                Description = existing.Description,
+                Status = existing.Status
+            };
+        }
+
+        _isLoading = false;
+    }
+
+    private async Task HandleSubmitAsync()
+    {
+        _isSaving = true;
+
+        var updated = await TicketService.UpdateAsync(Id, _model);
+        if (updated is null)
+        {
+            // The ticket disappeared between loading and saving.
+            _notFound = true;
+            _isSaving = false;
+            return;
+        }
+
+        Navigation.NavigateTo($"/tickets/{Id}");
+    }
+}

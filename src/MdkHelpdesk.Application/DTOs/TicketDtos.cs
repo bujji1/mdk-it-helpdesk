@@ -23,6 +23,23 @@ public sealed class CreateTicketRequest
 }
 
 /// <summary>
+/// Payload for updating an existing support ticket's details and status.
+/// </summary>
+public sealed class UpdateTicketRequest
+{
+    [Required(ErrorMessage = "Title is required.")]
+    [StringLength(150, MinimumLength = 3, ErrorMessage = "Title must be between 3 and 150 characters.")]
+    public string Title { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Description is required.")]
+    [StringLength(2000, ErrorMessage = "Description cannot exceed 2000 characters.")]
+    public string Description { get; set; } = string.Empty;
+
+    [EnumDataType(typeof(TicketStatus), ErrorMessage = "Status must be Open, InProgress or Closed.")]
+    public TicketStatus Status { get; set; }
+}
+
+/// <summary>
 /// Public representation of a support ticket returned by APIs and UI services.
 /// </summary>
 public sealed record TicketResponse(

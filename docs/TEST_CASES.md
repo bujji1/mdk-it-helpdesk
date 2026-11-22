@@ -47,3 +47,19 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez and Priya Patel
 | TC-3.9 | Call `POST /api/tickets` with an empty title | 400 Bad Request listing the validation errors | (integration test, to be added) |
 | TC-3.10 | Call `POST /api/tickets` with `assignedUserId` 9999 | 400 Bad Request, "Assigned user with ID 9999 was not found."; no ticket is created | `CreateAsync_ThrowsArgumentException_WhenAssignedUserDoesNotExist` |
 | TC-3.11 | Call `GET /api/users` | 200 OK with the three users ordered by name | `GetAllAsync_ReturnsSeededUsersOrderedByName` |
+
+## Story 4: Update a ticket's details and status
+
+> As a helpdesk agent, I can update a ticket's details and status, so that the ticket reflects the current state of the work.
+
+| ID | Steps | Expected result | Automated by |
+|---|---|---|---|
+| TC-4.1 | Open a ticket, click "Edit" | The edit form opens with the current title, description and status filled in | (visual check) |
+| TC-4.2 | Change the title, description and status, click "Save Changes" | The detail page shows the new values; "Last Updated" is later than before; "Created" is unchanged | `UpdateAsync_ChangesDetailsAndStatus_AndAdvancesUpdatedAtOnly` |
+| TC-4.3 | Edit a ticket that has an assignee and save | The assignee is unchanged | `UpdateAsync_KeepsExistingAssignee` |
+| TC-4.4 | Clear the title and save | "Title is required." is shown; nothing is saved | (visual check) |
+| TC-4.5 | Click "Cancel" on the edit form | The detail page opens; nothing is changed | (visual check) |
+| TC-4.6 | Open `/tickets/9999/edit` | "Ticket #9999 was not found" is shown | `UpdateAsync_ReturnsNull_WhenTicketDoesNotExist` |
+| TC-4.7 | Call `PUT /api/tickets/1` with a valid body | 200 OK with the updated ticket | (integration test, to be added) |
+| TC-4.8 | Call `PUT /api/tickets/1` with `"status": "Done"` | 400 Bad Request | (integration test, to be added) |
+| TC-4.9 | Call `PUT /api/tickets/9999` with a valid body | 404 Not Found | (integration test, to be added) |
