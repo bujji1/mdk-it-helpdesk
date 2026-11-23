@@ -94,6 +94,16 @@ public sealed class TicketServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GetByIdAsync_ReturnsTimestampsMarkedAsUtc()
+    {
+        var ticket = await _sut.GetByIdAsync(1);
+
+        Assert.NotNull(ticket);
+        Assert.Equal(DateTimeKind.Utc, ticket.CreatedAt.Kind);
+        Assert.Equal(DateTimeKind.Utc, ticket.UpdatedAt.Kind);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ReturnsNull_WhenTicketDoesNotExist()
     {
         var ticket = await _sut.GetByIdAsync(9999);
@@ -208,6 +218,20 @@ public sealed class TicketServiceTests : IDisposable
         });
 
         Assert.Null(updated);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ThrowsArgumentException_AndKeepsStatus_WhenStatusIsMissing()
+    {
+        var ex = await Assert.ThrowsAsync<ArgumentException>(() => _sut.UpdateAsync(2, new UpdateTicketRequest
+        {
+            Title = "No status supplied",
+            Description = "The status was left out."
+        }));
+
+        Assert.Equal("Status is required.", ex.Message);
+        var unchanged = await _sut.GetByIdAsync(2);
+        Assert.Equal(TicketStatus.InProgress, unchanged!.Status);
     }
 
     [Fact]

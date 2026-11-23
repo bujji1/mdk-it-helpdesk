@@ -14,7 +14,7 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez, Priya Patel an
 | TC-1.2 | Look at the Status column | Open, In Progress and Closed are shown as distinct coloured badges | (visual check) |
 | TC-1.3 | Look at the order of the rows | The most recently updated ticket is first | `GetTicketsAsync_ReturnsMostRecentlyUpdatedFirst` |
 | TC-1.4 | View a ticket that has no assignee | The Assigned To column shows "Unassigned" | `GetTicketsAsync_ReturnsNullAssigneeName_WhenTicketIsUnassigned` |
-| TC-1.5 | Call `GET /api/tickets` (from `/swagger`) | 200 OK with a JSON array; `status` is a readable string such as `"InProgress"`; timestamps are the stored UTC values, in ISO 8601 format without an offset | `GetTickets_ReturnsSeededTickets_WithStatusAsReadableString` |
+| TC-1.5 | Call `GET /api/tickets` (from `/swagger`) | 200 OK with a JSON array; `status` is a readable string such as `"InProgress"`; timestamps are UTC, ending in `Z` (for example `2026-11-01T12:00:00Z`) | `GetTickets_ReturnsSeededTickets_WithStatusAsReadableString`, `GetTicket_ReturnsTimestampsWithUtcMarker`, `GetByIdAsync_ReturnsTimestampsMarkedAsUtc` |
 | TC-1.6 | Open `/swagger` | Swagger UI loads and lists `GET /api/tickets` with its description | `SwaggerDocument_DescribesTheTicketEndpoints` |
 
 ## Story 2: Open a ticket to see its details
@@ -64,6 +64,7 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez, Priya Patel an
 | TC-4.8 | Call `PUT /api/tickets/1` with `"status": "Done"` | 400 Bad Request | `UpdateTicket_Returns400_WhenStatusIsNotAKnownValue` |
 | TC-4.9 | Call `PUT /api/tickets/9999` with a valid body | 404 Not Found | `UpdateTicket_Returns404_WhenTicketDoesNotExist` |
 | TC-4.10 | Edit a Closed ticket and set its status back to Open | The ticket is saved as Open: any status transition is allowed | `UpdateAsync_AllowsReopeningAClosedTicket` |
+| TC-4.11 | Call `PUT /api/tickets/2` with a title and description but no `status` | 400 Bad Request, "Status is required."; the ticket keeps its current status | `UpdateAsync_ThrowsArgumentException_AndKeepsStatus_WhenStatusIsMissing`, `UpdateTicket_Returns400_WhenStatusIsMissing` |
 
 ## Story 5: Assign a ticket to a user
 

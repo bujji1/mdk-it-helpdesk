@@ -98,9 +98,11 @@ public sealed class TicketService : ITicketService
             return null;
         }
 
+        var status = request.Status ?? throw new ArgumentException("Status is required.");
+
         ticket.Title = request.Title.Trim();
         ticket.Description = request.Description.Trim();
-        ticket.Status = request.Status;
+        ticket.Status = status;
 
         // UpdatedAt is stamped by AppDbContext.SaveChangesAsync, so no caller can forget it.
         await _db.SaveChangesAsync(cancellationToken);

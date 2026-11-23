@@ -35,8 +35,12 @@ public sealed class UpdateTicketRequest
     [StringLength(2000, ErrorMessage = "Description cannot exceed 2000 characters.")]
     public string Description { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Nullable so that a request which leaves out the status is rejected, rather than silently becoming Open.
+    /// </summary>
+    [Required(ErrorMessage = "Status is required.")]
     [EnumDataType(typeof(TicketStatus), ErrorMessage = "Status must be Open, InProgress or Closed.")]
-    public TicketStatus Status { get; set; }
+    public TicketStatus? Status { get; set; }
 }
 
 /// <summary>
