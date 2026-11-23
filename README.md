@@ -78,7 +78,7 @@ The Blazor pages and the REST controllers both call the same application service
 | GET | `/api/users` | List users available for assignment | 200 |
 | GET | `/health` | Health check, including database connectivity | 200, 503 |
 
-Errors are returned as RFC 7807 `ProblemDetails`. Status values are `Open`, `InProgress` and `Closed`.
+Errors are returned as RFC 7807 `ProblemDetails`. Status values are `Open`, `InProgress` and `Closed`, and `status` is required when updating a ticket. Timestamps are UTC in ISO 8601 format, for example `2026-11-01T12:00:00Z`.
 
 ## Tech and design choices
 

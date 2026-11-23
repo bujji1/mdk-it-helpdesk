@@ -2,6 +2,7 @@ using MdkHelpdesk.Application.Interfaces;
 using MdkHelpdesk.Domain.Entities;
 using MdkHelpdesk.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MdkHelpdesk.Infrastructure.Data;
 
@@ -16,6 +17,15 @@ public sealed class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<Ticket> Tickets => Set<Ticket>();
     public DbSet<User> Users => Set<User>();
+
+    /// <summary>
+    /// SQL Server's datetime2 (and SQLite) don't store a DateTimeKind, so timestamps would be read back as
+    /// Unspecified and serialized without a trailing "Z". Every DateTime in this model is UTC, so mark it as such.
+    /// </summary>
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<DateTime>().HaveConversion<UtcDateTimeConverter>();
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -134,5 +144,16 @@ public sealed class AppDbContext : DbContext, IAppDbContext
         }
 
         return base.SaveChangesAsync(cancellationToken);
+    }
+}
+
+/// <summary>
+/// Stores DateTime values unchanged and marks values read from the database as UTC.
+/// </summary>
+internal sealed class UtcDateTimeConverter : ValueConverter<DateTime, DateTime>
+{
+    public UtcDateTimeConverter()
+        : base(value => value, value => DateTime.SpecifyKind(value, DateTimeKind.Utc))
+    {
     }
 }

@@ -53,6 +53,15 @@ public sealed class TicketsApiTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
+    public async Task GetTicket_ReturnsTimestampsWithUtcMarker()
+    {
+        using var json = JsonDocument.Parse(await _client.GetStringAsync("/api/tickets/1"));
+
+        Assert.Equal("2026-11-01T12:00:00Z", json.RootElement.GetProperty("createdAt").GetString());
+        Assert.EndsWith("Z", json.RootElement.GetProperty("updatedAt").GetString());
+    }
+
+    [Fact]
     public async Task GetTicket_Returns404_WhenItDoesNotExist()
     {
         var response = await _client.GetAsync("/api/tickets/9999");
@@ -151,6 +160,19 @@ public sealed class TicketsApiTests : IClassFixture<CustomWebApplicationFactory>
             JsonBody("""{"title":"Still valid","description":"Still valid.","status":"Done"}"""));
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task UpdateTicket_Returns400_WhenStatusIsMissing()
+    {
+        var created = await CreateTicketAsync("Ticket updated without a status");
+
+        var response = await _client.PutAsync(
+            $"/api/tickets/{created.Id}",
+            JsonBody("""{"title":"Still valid","description":"Still valid."}"""));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Contains("Status is required.", await response.Content.ReadAsStringAsync());
     }
 
     [Fact]

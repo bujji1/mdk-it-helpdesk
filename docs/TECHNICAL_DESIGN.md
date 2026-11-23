@@ -109,7 +109,8 @@ Seed data (applied by the migrations): 4 users and 4 tickets covering every stat
 - Combining `assignedUserId` with `unassigned=true` is rejected with `400`.
 - Assigning to a user that doesn't exist is rejected with `400`.
 - All errors use RFC 7807 `ProblemDetails`. Validation failures return field-level messages.
-- Status values are serialized as strings. The full contract, with schemas, is in Swagger at `/swagger`.
+- `status` is required on `PUT`; leaving it out returns `400` instead of resetting the ticket to `Open`.
+- Status values are serialized as strings, and timestamps as UTC in ISO 8601 format with a trailing `Z`. The full contract, with schemas, is in Swagger at `/swagger`.
 
 ## 4. Request flow: creating a ticket
 
