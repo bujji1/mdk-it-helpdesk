@@ -113,7 +113,7 @@ Seed data (applied by the migrations): 4 users and 4 tickets covering every stat
 
 ## 4. Request flow: creating a ticket
 
-1. **Model binding and validation.** `TicketsController.Create` receives a `CreateTicketRequest`. Data annotations check the title and description; an invalid payload returns `400` before any code runs.
+1. **Model binding and validation.** `TicketsController.Create` receives a `CreateTicketRequest`. Data annotations check the title and description; an invalid payload returns `400` before the controller action runs.
 2. **Business rules.** `TicketService.CreateAsync` checks that any `AssignedUserId` refers to an existing user, trims the input and sets the status to `Open` on the server, whatever the client sent.
 3. **Persistence.** `AppDbContext.SaveChangesAsync` stamps `CreatedAt` and `UpdatedAt` in UTC, and EF Core issues a parameterized `INSERT`.
 4. **Response.** The controller returns `201 Created` with a `Location` header and the new ticket.
@@ -127,7 +127,7 @@ The Blazor pages follow the same path from step 2, calling `ITicketService` dire
 |---|---|
 | Validation | Data annotations on DTOs for field rules; database-dependent rules in the services |
 | Error handling | `IExceptionHandler` + `ProblemDetails`, consistent across the API |
-| Logging | `ILogger<T>` with structured message templates; in Azure, viewable in the App Service log stream when application logging is turned on |
+| Logging | `ILogger<T>` with structured message templates through the standard .NET logging providers; sending logs to Azure (Application Insights) is on the roadmap |
 | Timestamps | Set centrally in `SaveChangesAsync`, always UTC |
 | Resilience | `EnableRetryOnFailure` retries transient SQL errors, such as Azure SQL serverless resuming from pause |
 | Health | `/health` checks database connectivity via `AddDbContextCheck` |
@@ -148,8 +148,8 @@ flowchart LR
     App -->|migrations on startup| Sql[("Azure SQL serverless")]
 ```
 
-- **CI** (`.github/workflows/ci.yml`) runs on every pull request and push to `main`. It also fails if the EF Core model has changed without a matching migration.
-- **CD** (`.github/workflows/deploy.yml`) runs on every push to `main`, re-runs the tests, publishes the web project and deploys it to App Service.
+- **CI** (`.github/workflows/ci.yml`) runs on every pull request into `main` and every push to `main`. It also fails if the EF Core model has changed without a matching migration.
+- **CD** (`.github/workflows/deploy.yml`) runs on every push to `main` (or when run manually), independently of CI. It re-runs the tests, publishes the web project and deploys it to App Service.
 - **Schema changes** ship with the code: with `Database__ApplyMigrationsOnStartup=true` set in App Service, the app applies pending migrations when it starts.
 
 ## 7. Architecture decision records

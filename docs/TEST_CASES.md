@@ -14,7 +14,7 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez, Priya Patel an
 | TC-1.2 | Look at the Status column | Open, In Progress and Closed are shown as distinct coloured badges | (visual check) |
 | TC-1.3 | Look at the order of the rows | The most recently updated ticket is first | `GetTicketsAsync_ReturnsMostRecentlyUpdatedFirst` |
 | TC-1.4 | View a ticket that has no assignee | The Assigned To column shows "Unassigned" | `GetTicketsAsync_ReturnsNullAssigneeName_WhenTicketIsUnassigned` |
-| TC-1.5 | Call `GET /api/tickets` (from `/swagger`) | 200 OK with a JSON array; `status` is a readable string such as `"InProgress"`; timestamps are UTC | `GetTickets_ReturnsSeededTickets_WithStatusAsReadableString` |
+| TC-1.5 | Call `GET /api/tickets` (from `/swagger`) | 200 OK with a JSON array; `status` is a readable string such as `"InProgress"`; timestamps are the stored UTC values, in ISO 8601 format without an offset | `GetTickets_ReturnsSeededTickets_WithStatusAsReadableString` |
 | TC-1.6 | Open `/swagger` | Swagger UI loads and lists `GET /api/tickets` with its description | `SwaggerDocument_DescribesTheTicketEndpoints` |
 
 ## Story 2: Open a ticket to see its details
@@ -59,7 +59,7 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez, Priya Patel an
 | TC-4.3 | Edit a ticket that has an assignee and save | The assignee is unchanged | `UpdateAsync_KeepsExistingAssignee` |
 | TC-4.4 | Clear the title and save | "Title is required." is shown; nothing is saved | (visual check) |
 | TC-4.5 | Click "Cancel" on the edit form | The detail page opens; nothing is changed | (visual check) |
-| TC-4.6 | Open `/tickets/9999/edit` | "Ticket #9999 was not found" is shown | `UpdateAsync_ReturnsNull_WhenTicketDoesNotExist` |
+| TC-4.6 | Open `/tickets/9999/edit` | "Ticket #9999 was not found" is shown | `GetByIdAsync_ReturnsNull_WhenTicketDoesNotExist`, `UpdateAsync_ReturnsNull_WhenTicketDoesNotExist` |
 | TC-4.7 | Call `PUT /api/tickets/1` with a valid body | 200 OK with the updated ticket | `UpdateTicket_ChangesStatus_AndAdvancesUpdatedAtOnly` |
 | TC-4.8 | Call `PUT /api/tickets/1` with `"status": "Done"` | 400 Bad Request | `UpdateTicket_Returns400_WhenStatusIsNotAKnownValue` |
 | TC-4.9 | Call `PUT /api/tickets/9999` with a valid body | 404 Not Found | `UpdateTicket_Returns404_WhenTicketDoesNotExist` |

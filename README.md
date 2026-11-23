@@ -84,7 +84,7 @@ Errors are returned as RFC 7807 `ProblemDetails`. Status values are `Open`, `InP
 
 - **Blazor Server for the UI, plus REST controllers.** Blazor keeps the whole stack in C# and lets pages call the application services directly, which suits a small internal tool. The REST API is there for integrations and is what the integration tests exercise.
 - **Layered projects with dependencies pointing inward.** The domain has no dependencies; business logic reaches the database through the `IAppDbContext` interface, so it does not depend on the concrete EF Core context. I stopped short of adding a repository layer: EF Core's `DbSet` already is one, and another abstraction would add code without adding value at this size.
-- **SQL Server everywhere.** LocalDB locally and Azure SQL in production, so the same migrations and SQL dialect run in both.
+- **SQL Server wherever the app runs.** LocalDB locally and Azure SQL in production, so the same migrations and SQL dialect run in both. The automated tests use in-memory SQLite for speed and isolation.
 - **Timestamps are set in one place.** `AppDbContext.SaveChangesAsync` stamps `CreatedAt` and `UpdatedAt` in UTC, so no caller can forget to, or get it wrong.
 - **Validation in two layers.** Data annotations on the request DTOs give field-level messages in the forms and automatic 400 responses in the API. Rules that need the database (the assignee must exist) live in the service.
 - **Consistent error handling.** A global exception handler turns exceptions into `ProblemDetails` responses and never exposes stack traces.
@@ -124,10 +124,10 @@ flowchart LR
     App -->|applies migrations on startup| Sql[("Azure SQL")]
 ```
 
-- **CI** (`.github/workflows/ci.yml`): on every pull request and every push to `main`, builds the solution, checks that the EF Core migrations match the model, and runs all tests.
-- **CD** (`.github/workflows/deploy.yml`): on every merge to `main`, builds, tests, publishes and deploys to Azure App Service.
+- **CI** (`.github/workflows/ci.yml`): on every pull request into `main` and every push to `main`, builds the solution, checks that the EF Core migrations match the model, and runs all tests.
+- **CD** (`.github/workflows/deploy.yml`): on every push to `main` (or when run manually), builds, tests, publishes and deploys to Azure App Service.
 
-Work was done as user stories: each is a GitHub [issue](https://github.com/bujji1/mdk-it-helpdesk/issues?q=is%3Aissue), built on its own feature branch and merged through a pull request only when CI was green. The merge commits in the history show each step.
+Work was organised as user stories, tracked as GitHub [issues](https://github.com/bujji1/mdk-it-helpdesk/issues?q=is%3Aissue); each was built on its own feature branch and merged into `main` once CI passed.
 
 ### Azure setup
 
@@ -139,5 +139,5 @@ Work was done as user stories: each is a GitHub [issue](https://github.com/bujji
 
 - [Installation and local setup](docs/SETUP.md): prerequisites, LocalDB or Docker, Visual Studio, troubleshooting
 - [Technical design](docs/TECHNICAL_DESIGN.md): architecture, data model, API contract, request flow, decision records, scale-up roadmap
-- [Architecture diagram](docs/architecture.drawio): editable source for the diagrams (open in [diagrams.net](https://app.diagrams.net))
+- [Architecture diagram](docs/architecture.drawio): editable source for the architecture and scale-up diagrams (open in [diagrams.net](https://app.diagrams.net))
 - [Acceptance test cases](docs/TEST_CASES.md): manual test cases per user story, linked to the automated tests

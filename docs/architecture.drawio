@@ -14,8 +14,8 @@
         </mxCell>
 
         <!-- Azure App Service Container -->
-        <mxCell id="azure-app" value="Azure App Service (ASP.NET Core .NET)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;startSize=30;" vertex="1" parent="1">
-          <mxGeometry x="250" y="80" width="540" height="390" as="geometry" />
+        <mxCell id="azure-app" value="Azure App Service (ASP.NET Core, .NET 10)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="250" y="80" width="540" height="430" as="geometry" />
         </mxCell>
 
         <!-- Presentation Layer -->
@@ -23,13 +23,13 @@
           <mxGeometry x="20" y="50" width="500" height="90" as="geometry" />
         </mxCell>
         <mxCell id="comp-blazor" value="Blazor UI&#xa;(Interactive Server)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="layer-pres">
-          <mxGeometry x="15" y="35" width="145" height="45" as="geometry" />
+          <mxGeometry x="15" y="35" width="110" height="45" as="geometry" />
         </mxCell>
         <mxCell id="comp-api" value="REST API Controllers&#xa;+ Swagger (XML Docs)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="layer-pres">
-          <mxGeometry x="175" y="35" width="165" height="45" as="geometry" />
+          <mxGeometry x="135" y="35" width="135" height="45" as="geometry" />
         </mxCell>
         <mxCell id="comp-health" value="Health Check&#xa;(/health)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="layer-pres">
-          <mxGeometry x="355" y="35" width="130" height="45" as="geometry" />
+          <mxGeometry x="280" y="35" width="95" height="45" as="geometry" />
         </mxCell>
 
         <!-- Application Layer -->
@@ -42,8 +42,8 @@
         <mxCell id="comp-val" value="DTOs &amp; Validation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="layer-app">
           <mxGeometry x="220" y="35" width="130" height="45" as="geometry" />
         </mxCell>
-        <mxCell id="comp-err" value="Global Exception&#xa;(ProblemDetails)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="layer-app">
-          <mxGeometry x="365" y="35" width="120" height="45" as="geometry" />
+        <mxCell id="comp-err" value="Global Exception&#xa;(ProblemDetails)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="layer-pres">
+          <mxGeometry x="385" y="35" width="100" height="45" as="geometry" />
         </mxCell>
 
         <!-- Infrastructure Layer -->
@@ -51,20 +51,15 @@
           <mxGeometry x="20" y="270" width="500" height="90" as="geometry" />
         </mxCell>
         <mxCell id="comp-ef" value="Entity Framework Core&#xa;(Migrations + UTC Audit + Seed)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="layer-infra">
-          <mxGeometry x="15" y="35" width="230" height="45" as="geometry" />
+          <mxGeometry x="15" y="35" width="470" height="45" as="geometry" />
         </mxCell>
-        <mxCell id="comp-log" value="Structured Logging" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="layer-infra">
-          <mxGeometry x="265" y="35" width="220" height="45" as="geometry" />
+        <mxCell id="comp-log" value="Cross-cutting: structured logging (ILogger), dependency injection, configuration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="azure-app">
+          <mxGeometry x="20" y="370" width="500" height="45" as="geometry" />
         </mxCell>
 
         <!-- Database -->
         <mxCell id="db-sql" value="Azure SQL Database" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="860" y="340" width="170" height="90" as="geometry" />
-        </mxCell>
-
-        <!-- Logging -->
-        <mxCell id="obs-ai" value="App Service&#xa;Log Stream" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="860" y="180" width="170" height="60" as="geometry" />
         </mxCell>
 
         <!-- CI/CD -->
@@ -94,7 +89,7 @@
         <mxCell id="e6" edge="1" parent="1" source="comp-ef" target="db-sql" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e7" edge="1" parent="1" source="comp-log" target="obs-ai" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
+        <mxCell id="e10" edge="1" parent="1" source="comp-health" target="comp-ef" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;exitX=0.85;exitY=1;exitDx=0;exitDy=0;entryX=0.9;entryY=0;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e8" edge="1" parent="1" source="cicd-gh" target="cicd-act" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
