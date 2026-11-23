@@ -15,7 +15,7 @@ Everything needed to get MDK IT Helpdesk running on a fresh machine: install the
 - **SQL Server LocalDB (Windows, recommended).** Installed with Visual Studio's *ASP.NET and web development* workload, or on its own by choosing *Download Media → LocalDB* in the [SQL Server Express installer](https://www.microsoft.com/sql-server/sql-server-downloads). The app's default connection string already points at it.
 - **SQL Server in Docker (macOS, Linux or Windows).** See [Using Docker instead of LocalDB](#using-docker-instead-of-localdb).
 
-**Visual Studio 2022 (17.14 or later) or 2026** is optional. Earlier versions can't open the `.slnx` solution file.
+**Visual Studio 2026** is optional; it's the first version with full .NET 10 support. Visual Studio 2022 17.14 can open the `.slnx` solution file but may not build .NET 10 projects.
 
 ## 2. Get the code
 
@@ -29,10 +29,10 @@ All of the following commands run from this folder.
 ## 3. Check LocalDB is running
 
 ```bash
-sqllocaldb info
+sqllocaldb info MSSQLLocalDB
 ```
 
-You should see `MSSQLLocalDB`. If it isn't running:
+You should see `State: Running`. If it says `Stopped`, start it (LocalDB also starts automatically on the first connection):
 
 ```bash
 sqllocaldb start MSSQLLocalDB
@@ -77,7 +77,7 @@ If the browser warns about the certificate, trust the .NET development certifica
 
 1. Open `MdkHelpdesk.slnx`.
 2. Right-click `MdkHelpdesk.Web` → **Set as Startup Project**.
-3. Press **F5** to run with the debugger, or **Ctrl+F5** without it.
+3. Choose the **https** profile in the run dropdown, then press **F5** to run with the debugger, or **Ctrl+F5** without it. The default **http** profile opens http://localhost:5035 instead.
 
 To browse the data, open **View → SQL Server Object Explorer** and expand `(localdb)\MSSQLLocalDB → Databases → MdkHelpdeskDb`.
 
@@ -91,7 +91,7 @@ The tests don't need LocalDB: both the unit and integration tests run against in
 
 ## Using Docker instead of LocalDB
 
-1. Start SQL Server, choosing your own strong password:
+1. Start SQL Server, choosing your own strong password. On Apple Silicon Macs, turn on Docker Desktop's Rosetta emulation first, because the image is built for x86-64 only:
 
    ```bash
    docker run -d --name mdk-sql -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<your-strong-password>" -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
@@ -118,7 +118,7 @@ The tests don't need LocalDB: both the unit and integration tests run against in
 | `Assets file 'project.assets.json' not found` when running `dotnet ef` | Run `dotnet restore` first. |
 | `dotnet ef` is not recognized | Install the tool (step 4), then open a new terminal so the tools folder is on your `PATH`. |
 | Cannot connect to `(localdb)\MSSQLLocalDB` | Run `sqllocaldb start MSSQLLocalDB`, or install LocalDB (step 1). |
-| Visual Studio can't open `MdkHelpdesk.slnx` | Update to Visual Studio 2022 17.14 or later, or use the command line. |
+| Visual Studio can't open `MdkHelpdesk.slnx` | Use Visual Studio 2026, or the command line. |
 | Browser certificate warning | Run `dotnet dev-certs https --trust`. |
 | `An Application Control policy has blocked this file (0x800711C7)` when running `dotnet ef`, `dotnet test` or the app | Windows Smart App Control is blocking the newly built DLLs. See [Windows Smart App Control](#windows-smart-app-control). |
 
@@ -132,7 +132,7 @@ Windows 11 can block apps it doesn't recognize, and that includes DLLs you've ju
    (Get-MpComputerStatus).SmartAppControlState
    ```
 
-   `On` means it's active. `Off` or `Evaluation` means it isn't what's causing the error.
+   `On` means it's active. `Off` or `Eval` (evaluation mode) means it isn't what's causing the error.
 
 2. If it's on, either:
    - **Turn it off:** open **Windows Security → App & browser control → Smart App Control settings** and choose **Off**. This is common on development machines. Check your organization's policy first, and note that on some Windows versions Smart App Control can't be turned back on without resetting Windows.
