@@ -68,7 +68,7 @@
         </mxCell>
 
         <!-- CI/CD -->
-        <mxCell id="cicd-gh" value="GitHub Repo +&#xa;Issues / Project Board" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="cicd-gh" value="GitHub Repo +&#xa;Issues / Pull Requests" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="250" y="530" width="200" height="60" as="geometry" />
         </mxCell>
         <mxCell id="cicd-act" value="GitHub Actions CI/CD&#xa;(Build -&gt; Test -&gt; Deploy)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">

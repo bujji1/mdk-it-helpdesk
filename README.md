@@ -109,7 +109,7 @@ dotnet test
 ```
 
 - **Unit tests** (`tests/MdkHelpdesk.UnitTests`): the application services against a real relational engine (SQLite in-memory) with the real `AppDbContext`, so queries, constraints, seed data and the timestamp logic are exercised rather than mocked.
-- **Integration tests** (`tests/MdkHelpdesk.IntegrationTests`): the full HTTP pipeline through `WebApplicationFactory`, covering each endpoint's success and failure paths, plus smoke tests for the home page and Swagger.
+- **Integration tests** (`tests/MdkHelpdesk.IntegrationTests`): the full HTTP pipeline through `WebApplicationFactory`, covering each endpoint's success and failure paths, plus smoke tests for the home page, Swagger and the health check.
 - **Acceptance test cases** ([docs/TEST_CASES.md](docs/TEST_CASES.md)): manual test cases per user story, each linked to the automated test that covers it.
 
 ## CI/CD
@@ -124,10 +124,10 @@ flowchart LR
     App -->|applies migrations on startup| Sql[("Azure SQL")]
 ```
 
-- **CI** (`.github/workflows/ci.yml`): on every push and pull request, builds the solution, checks that the EF Core migrations match the model, and runs all tests.
+- **CI** (`.github/workflows/ci.yml`): on every pull request and every push to `main`, builds the solution, checks that the EF Core migrations match the model, and runs all tests.
 - **CD** (`.github/workflows/deploy.yml`): on every merge to `main`, builds, tests, publishes and deploys to Azure App Service.
 
-Work was done as user stories: one GitHub issue, one feature branch and one pull request per story, merged only when CI was green.
+Work was done as user stories: each is a GitHub [issue](https://github.com/bujji1/mdk-it-helpdesk/issues?q=is%3Aissue), built on its own feature branch and merged through a pull request only when CI was green. The merge commits in the history show each step.
 
 ### Azure setup
 

@@ -15,7 +15,7 @@ Everything needed to get MDK IT Helpdesk running on a fresh machine: install the
 - **SQL Server LocalDB (Windows, recommended).** Installed with Visual Studio's *ASP.NET and web development* workload, or on its own by choosing *Download Media → LocalDB* in the [SQL Server Express installer](https://www.microsoft.com/sql-server/sql-server-downloads). The app's default connection string already points at it.
 - **SQL Server in Docker (macOS, Linux or Windows).** See [Using Docker instead of LocalDB](#using-docker-instead-of-localdb).
 
-**Visual Studio 2022 (17.13 or later) or 2026** is optional. Earlier versions can't open the `.slnx` solution file.
+**Visual Studio 2022 (17.14 or later) or 2026** is optional. Earlier versions can't open the `.slnx` solution file.
 
 ## 2. Get the code
 
@@ -53,7 +53,7 @@ dotnet ef database update --project src/MdkHelpdesk.Infrastructure --startup-pro
 
 This creates the `MdkHelpdeskDb` database in `(localdb)\MSSQLLocalDB` with 4 helpdesk users and 4 sample tickets.
 
-If `dotnet-ef` is already installed, the install command reports it; that's fine. Run `dotnet tool update --global dotnet-ef --version 10.0.15` to match the version CI uses.
+If a different version of `dotnet-ef` is already installed, recent SDKs switch it to the requested version; older SDKs report that it's already installed, in which case run `dotnet tool update --global dotnet-ef --version 10.0.15`. Check with `dotnet ef --version`.
 
 ## 5. Run the app
 
@@ -118,7 +118,7 @@ The tests don't need LocalDB: both the unit and integration tests run against in
 | `Assets file 'project.assets.json' not found` when running `dotnet ef` | Run `dotnet restore` first. |
 | `dotnet ef` is not recognized | Install the tool (step 4), then open a new terminal so the tools folder is on your `PATH`. |
 | Cannot connect to `(localdb)\MSSQLLocalDB` | Run `sqllocaldb start MSSQLLocalDB`, or install LocalDB (step 1). |
-| Visual Studio can't open `MdkHelpdesk.slnx` | Update to Visual Studio 2022 17.13 or later, or use the command line. |
+| Visual Studio can't open `MdkHelpdesk.slnx` | Update to Visual Studio 2022 17.14 or later, or use the command line. |
 | Browser certificate warning | Run `dotnet dev-certs https --trust`. |
 | `An Application Control policy has blocked this file (0x800711C7)` when running `dotnet ef`, `dotnet test` or the app | Windows Smart App Control is blocking the newly built DLLs. See [Windows Smart App Control](#windows-smart-app-control). |
 

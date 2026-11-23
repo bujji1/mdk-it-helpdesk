@@ -46,7 +46,7 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez, Priya Patel an
 | TC-3.8 | Call `POST /api/tickets` with a valid body | 201 Created, a `Location` header pointing at the new ticket, and the ticket as JSON | `CreateTicket_Returns201WithLocation_AndTicketCanBeFetched` |
 | TC-3.9 | Call `POST /api/tickets` with an empty title | 400 Bad Request listing the validation errors | `CreateTicket_Returns400WithFieldErrors_WhenTitleIsEmpty` |
 | TC-3.10 | Call `POST /api/tickets` with `assignedUserId` 9999 | 400 Bad Request, "Assigned user with ID 9999 was not found."; no ticket is created | `CreateAsync_ThrowsArgumentException_WhenAssignedUserDoesNotExist`, `CreateTicket_Returns400ProblemDetails_WhenAssigneeDoesNotExist` |
-| TC-3.11 | Call `GET /api/users` | 200 OK with the four users ordered by name | `GetAllAsync_ReturnsSeededUsersOrderedByName` |
+| TC-3.11 | Call `GET /api/users` | 200 OK with the four users ordered by name | `GetAllAsync_ReturnsSeededUsersOrderedByName`, `GetUsers_ReturnsSeededUsersOrderedByName` |
 
 ## Story 4: Update a ticket's details and status
 
@@ -96,3 +96,12 @@ Seed data used by these cases: users Alice Johnson, Bob Martinez, Priya Patel an
 | TC-6.9 | Choose "Unassigned" together with a status | Only unassigned tickets with that status are listed | `GetTicketsAsync_UnassignedOnly_CombinesWithStatus` |
 | TC-6.10 | Choose "Daniel Kim", who has no tickets | "No tickets match the selected filters." is shown | `SeedData_IncludesAnUnassignedTicket_AndAUserWithNoTickets` |
 | TC-6.11 | Call `GET /api/tickets?assignedUserId=1&unassigned=true` | 400 Bad Request: the two filters cannot be combined | `GetTicketsAsync_ThrowsArgumentException_WhenUserAndUnassignedAreCombined`, `GetTickets_Returns400_WhenUserAndUnassignedFiltersAreCombined` |
+
+## Operational checks
+
+Checks that the deployed app and its database are healthy. Not a user story, but used after every deployment.
+
+| ID | Steps | Expected result | Automated by |
+|---|---|---|---|
+| TC-7.1 | Call `GET /health` | 200 OK with `Healthy` when the database is reachable | `HealthEndpoint_ReportsHealthy_WhenTheDatabaseIsReachable` |
+| TC-7.2 | Open the live site after a deployment | The ticket list loads with the seeded tickets | (visual check) |
