@@ -20,25 +20,30 @@ A small internal tool for an IT helpdesk team to manage support tickets. Built w
 
 ## Run it locally
 
-**Prerequisites:** [.NET 10 SDK](https://dotnet.microsoft.com/download) and SQL Server LocalDB (installed with Visual Studio's *ASP.NET and web development* workload).
+**Prerequisites:** [Git](https://git-scm.com/downloads), the [.NET 10 SDK](https://dotnet.microsoft.com/download) and SQL Server LocalDB (installed with Visual Studio's *ASP.NET and web development* workload). The full guide, including Visual Studio, Docker and troubleshooting, is in [docs/SETUP.md](docs/SETUP.md).
 
 ```bash
-# 1. Install the EF Core CLI (once)
-dotnet tool install --global dotnet-ef
+# 1. Get the code
+git clone https://github.com/bujji1/mdk-it-helpdesk.git
+cd mdk-it-helpdesk
 
-# 2. Create the database and seed data (4 users, 4 tickets)
+# 2. Restore packages and install the EF Core CLI (once)
+dotnet restore
+dotnet tool install --global dotnet-ef --version 10.0.15
+
+# 3. Create the database and seed data (4 users, 4 tickets)
 dotnet ef database update --project src/MdkHelpdesk.Infrastructure --startup-project src/MdkHelpdesk.Web
 
-# 3. Run the app
-dotnet run --project src/MdkHelpdesk.Web
+# 4. Run the app
+dotnet run --project src/MdkHelpdesk.Web --launch-profile https
 
-# 4. Run the tests (no database needed)
+# 5. Run the tests (no database needed)
 dotnet test
 ```
 
-Then open the URL printed by `dotnet run`; the UI is at `/` and Swagger at `/swagger`.
+Then open https://localhost:7104 for the UI and https://localhost:7104/swagger for the API docs.
 
-Not on Windows, or no LocalDB? Point `ConnectionStrings:DefaultConnection` in `src/MdkHelpdesk.Web/appsettings.Development.json` at any SQL Server instance (for example a Docker container) and run the same commands.
+Not on Windows, or no LocalDB? Run SQL Server in Docker instead; see [docs/SETUP.md](docs/SETUP.md#using-docker-instead-of-localdb).
 
 ## Architecture
 
@@ -129,3 +134,10 @@ Work was done as user stories: one GitHub issue, one feature branch and one pull
 - **App Service** (Windows, .NET 10) hosts the app.
 - **Azure SQL Database** holds the schema. With the app setting `Database__ApplyMigrationsOnStartup=true`, the app applies pending EF Core migrations on startup, so a deploy also updates the schema.
 - **Secrets stay out of the repo.** The connection string is an App Service connection string named `DefaultConnection`; the deployment credential is a GitHub Actions secret.
+
+## Documentation
+
+- [Installation and local setup](docs/SETUP.md): prerequisites, LocalDB or Docker, Visual Studio, troubleshooting
+- [Technical design](docs/TECHNICAL_DESIGN.md): architecture, data model, API contract, request flow, decision records, scale-up roadmap
+- [Architecture diagram](docs/architecture.drawio): editable source for the diagrams (open in [diagrams.net](https://app.diagrams.net))
+- [Acceptance test cases](docs/TEST_CASES.md): manual test cases per user story, linked to the automated tests
