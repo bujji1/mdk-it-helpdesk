@@ -127,7 +127,7 @@ The Blazor pages follow the same path from step 2, calling `ITicketService` dire
 |---|---|
 | Validation | Data annotations on DTOs for field rules; database-dependent rules in the services |
 | Error handling | `IExceptionHandler` + `ProblemDetails`, consistent across the API |
-| Logging | `ILogger<T>` with structured message templates, written to the App Service log stream |
+| Logging | `ILogger<T>` with structured message templates; in Azure, viewable in the App Service log stream when application logging is turned on |
 | Timestamps | Set centrally in `SaveChangesAsync`, always UTC |
 | Resilience | `EnableRetryOnFailure` retries transient SQL errors, such as Azure SQL serverless resuming from pause |
 | Health | `/health` checks database connectivity via `AddDbContextCheck` |
