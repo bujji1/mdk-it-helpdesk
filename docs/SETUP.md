@@ -120,3 +120,27 @@ The tests don't need LocalDB: both the unit and integration tests run against in
 | Cannot connect to `(localdb)\MSSQLLocalDB` | Run `sqllocaldb start MSSQLLocalDB`, or install LocalDB (step 1). |
 | Visual Studio can't open `MdkHelpdesk.slnx` | Update to Visual Studio 2022 17.13 or later, or use the command line. |
 | Browser certificate warning | Run `dotnet dev-certs https --trust`. |
+| `An Application Control policy has blocked this file (0x800711C7)` when running `dotnet ef`, `dotnet test` or the app | Windows Smart App Control is blocking the newly built DLLs. See [Windows Smart App Control](#windows-smart-app-control). |
+
+### Windows Smart App Control
+
+Windows 11 can block apps it doesn't recognize, and that includes DLLs you've just built. The build succeeds, but `dotnet ef`, `dotnet test` and `dotnet run` then fail with `Could not load file or assembly ... An Application Control policy has blocked this file`. The block isn't always applied consistently, so a command may work once and fail the next time.
+
+1. Check whether Smart App Control is on, in PowerShell:
+
+   ```powershell
+   (Get-MpComputerStatus).SmartAppControlState
+   ```
+
+   `On` means it's active. `Off` or `Evaluation` means it isn't what's causing the error.
+
+2. If it's on, either:
+   - **Turn it off:** open **Windows Security → App & browser control → Smart App Control settings** and choose **Off**. This is common on development machines. Check your organization's policy first, and note that on some Windows versions Smart App Control can't be turned back on without resetting Windows.
+   - **Leave it on and use the deployed app:** the [live site](https://mdk-it-helpdesk-kiran-htafg9b0hwc5cqa4.westus3-01.azurewebsites.net) and GitHub Actions run the same code and tests without this restriction.
+
+3. After turning it off, rebuild and re-run the failed command:
+
+   ```bash
+   dotnet build
+   dotnet ef database update --project src/MdkHelpdesk.Infrastructure --startup-project src/MdkHelpdesk.Web
+   ```
