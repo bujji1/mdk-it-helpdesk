@@ -1,0 +1,183 @@
+<mxfile host="app.diagrams.net" modified="2026-11-18T17:10:00.000Z" version="24.7.0" type="device">
+  <diagram id="mdk-helpdesk-arch" name="MDK Helpdesk Architecture">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Actors -->
+        <mxCell id="actor-user" value="IT Helpdesk User&#xa;(Browser)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actor-api" value="API Consumer /&#xa;Swagger UI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="250" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Azure App Service Container -->
+        <mxCell id="azure-app" value="Azure App Service (ASP.NET Core .NET)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="250" y="80" width="540" height="390" as="geometry" />
+        </mxCell>
+
+        <!-- Presentation Layer -->
+        <mxCell id="layer-pres" value="Presentation Layer" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;startSize=25;" vertex="1" parent="azure-app">
+          <mxGeometry x="20" y="50" width="500" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="comp-blazor" value="Blazor UI&#xa;(Interactive Server)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="layer-pres">
+          <mxGeometry x="15" y="35" width="145" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="comp-api" value="REST API Controllers&#xa;+ Swagger (XML Docs)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="layer-pres">
+          <mxGeometry x="175" y="35" width="165" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="comp-health" value="Health Check&#xa;(/health)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="layer-pres">
+          <mxGeometry x="355" y="35" width="130" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Application Layer -->
+        <mxCell id="layer-app" value="Application Layer" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;startSize=25;" vertex="1" parent="azure-app">
+          <mxGeometry x="20" y="160" width="500" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="comp-services" value="Ticket &amp; User Services&#xa;(ITicketService / IUserService)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="layer-app">
+          <mxGeometry x="15" y="35" width="190" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="comp-val" value="DTOs &amp; Validation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="layer-app">
+          <mxGeometry x="220" y="35" width="130" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="comp-err" value="Global Exception&#xa;(ProblemDetails)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="layer-app">
+          <mxGeometry x="365" y="35" width="120" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Infrastructure Layer -->
+        <mxCell id="layer-infra" value="Infrastructure / Data Layer" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;startSize=25;" vertex="1" parent="azure-app">
+          <mxGeometry x="20" y="270" width="500" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="comp-ef" value="Entity Framework Core&#xa;(Migrations + UTC Audit + Seed)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="layer-infra">
+          <mxGeometry x="15" y="35" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="comp-log" value="Structured Logging" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="layer-infra">
+          <mxGeometry x="265" y="35" width="220" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Database -->
+        <mxCell id="db-sql" value="Azure SQL Database" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="860" y="340" width="170" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Logging -->
+        <mxCell id="obs-ai" value="App Service&#xa;Log Stream" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="860" y="180" width="170" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- CI/CD -->
+        <mxCell id="cicd-gh" value="GitHub Repo +&#xa;Issues / Project Board" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="530" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cicd-act" value="GitHub Actions CI/CD&#xa;(Build -&gt; Test -&gt; Deploy)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="530" width="210" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Connectors -->
+        <mxCell id="e1" edge="1" parent="1" source="actor-user" target="comp-blazor" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="actor-api" target="comp-api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="comp-blazor" target="comp-services" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="comp-api" target="comp-services" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="comp-services" target="comp-ef" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="comp-ef" target="db-sql" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="comp-log" target="obs-ai" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="cicd-gh" target="cicd-act" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="cicd-act" target="azure-app" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="mdk-enterprise-arch" name="2. Enterprise Scale (Millions)">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Users & Auth -->
+        <mxCell id="ent-users" value="Millions of Users&#xa;(Browser / Mobile / API)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="180" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-auth" value="Microsoft Entra ID&#xa;(OAuth2 / OIDC / RBAC)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="300" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Edge -->
+        <mxCell id="ent-fd" value="Azure Front Door&#xa;(CDN + WAF + Rate Limit)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="180" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Compute -->
+        <mxCell id="ent-compute" value="Auto-Scaling Compute" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;startSize=25;" vertex="1" parent="1">
+          <mxGeometry x="440" y="100" width="230" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-app" value="Azure App Service /&#xa;Container Apps (N Instances)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="ent-compute">
+          <mxGeometry x="20" y="45" width="190" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-signalr" value="Azure SignalR Service&#xa;(Blazor Scale-Out)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="ent-compute">
+          <mxGeometry x="20" y="120" width="190" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-worker" value="Background Workers&#xa;(Email / SLA / Notifications)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="ent-compute">
+          <mxGeometry x="20" y="190" width="190" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Data & Messaging -->
+        <mxCell id="ent-redis" value="Azure Cache for Redis&#xa;(Hot Queries / Sessions)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="70" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-sql-p" value="Azure SQL Primary&#xa;(Writes)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="170" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-sql-r" value="Azure SQL Read Replicas&#xa;(Reads / Filtering)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="960" y="170" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-sb" value="Azure Service Bus&#xa;(Async Event Queue)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="290" width="170" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Security, CI/CD & Observability -->
+        <mxCell id="ent-kv" value="Azure Key Vault&#xa;(Secrets &amp; Certs)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="300" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-cicd" value="GitHub Actions CI/CD&#xa;(SAST/DAST -&gt; Staging Slot -&gt; Swap)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="420" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-mon" value="Azure Monitor + OpenTelemetry&#xa;+ Log Analytics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="420" width="210" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="ee1" edge="1" parent="1" source="ent-users" target="ent-fd" style="edgeStyle=orthogonalEdgeStyle;html=1;" />
+        <mxCell id="ee2" edge="1" parent="1" source="ent-users" target="ent-auth" style="edgeStyle=orthogonalEdgeStyle;html=1;" />
+        <mxCell id="ee3" edge="1" parent="1" source="ent-fd" target="ent-app" style="edgeStyle=orthogonalEdgeStyle;html=1;" />
+        <mxCell id="ee4" edge="1" parent="1" source="ent-app" target="ent-signalr" style="edgeStyle=orthogonalEdgeStyle;html=1;" />
+        <mxCell id="ee5" edge="1" parent="1" source="ent-app" target="ent-redis" style="edgeStyle=orthogonalEdgeStyle;html=1;" />
+        <mxCell id="ee6" edge="1" parent="1" source="ent-app" target="ent-sql-p" style="edgeStyle=orthogonalEdgeStyle;html=1;" />
+        <mxCell id="ee7" edge="1" parent="1" source="ent-sql-p" target="ent-sql-r" style="edgeStyle=orthogonalEdgeStyle;html=1;" />
+        <mxCell id="ee8" edge="1" parent="1" source="ent-app" target="ent-sb" style="edgeStyle=orthogonalEdgeStyle;html=1;" />
+        <mxCell id="ee9" edge="1" parent="1" source="ent-sb" target="ent-worker" style="edgeStyle=orthogonalEdgeStyle;html=1;" />
+        <mxCell id="ee10" edge="1" parent="1" source="ent-kv" target="ent-app" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;" />
+        <mxCell id="ee11" edge="1" parent="1" source="ent-cicd" target="ent-compute" style="edgeStyle=orthogonalEdgeStyle;html=1;" />
+        <mxCell id="ee12" edge="1" parent="1" source="ent-compute" target="ent-mon" style="edgeStyle=orthogonalEdgeStyle;html=1;" />
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
